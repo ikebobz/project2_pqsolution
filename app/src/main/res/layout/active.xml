@@ -1,6 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/activescrn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="Past Questions Centre"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:id="@+id/lbl_sel_course"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below = "@id/activescrn"
+        android:layout_marginTop="20dp"
+        android:text="Please select a course"
+        />
+    <Spinner
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/courses"
+        android:layout_below = "@id/activescrn"
+        android:layout_marginTop="20dp"
+        android:layout_toEndOf="@id/lbl_sel_course"
+        android:layout_marginStart = "10dp">
 
-</android.support.constraint.ConstraintLayout>
+    </Spinner>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/lbl_quest_snip"
+        android:layout_below = "@id/lbl_sel_course"
+        android:layout_marginTop="20dp"
+        android:text = "Enter part of the question"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height = "80dp"
+        android:id = "@+id/editq"
+        android:layout_below = "@id/lbl_quest_snip"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/shape"
+        android:inputType="text|textMultiLine"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/searchq"
+        android:layout_below = "@id/editq"
+        android:layout_marginTop="20dp"
+        android:text = "Search"/>
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:id = "@+id/scrllvw1"
+        android:layout_below = "@id/searchq"
+        android:layout_marginTop="20dp"
+        >
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id = "@+id/searchResult"
+            android:text = "I would like to invite you to attend our upcoming Liberal Arts department job networking event. The event will be held on the afternoon of February 1, 20XX. We wish to provide our graduating seniors with an opportunity to meet business leaders in the area who may be looking for new hires who hold degrees in the Liberal Arts."/>
+
+    </ScrollView>
+
+
+</RelativeLayout>
