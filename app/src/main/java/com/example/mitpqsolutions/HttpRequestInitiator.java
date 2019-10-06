@@ -72,7 +72,7 @@ public class HttpRequestInitiator //class that would make request for data
   }
   catch(Exception ex)
   {
-
+     ex.printStackTrace();
   }
   return jsonobj;
  }
