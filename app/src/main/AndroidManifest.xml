@@ -4,6 +4,7 @@
     package="com.example.mitpqsolutions">
     <uses-permission android:name = "android.permission.INTERNET" />
     <uses-permission android:name = "android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
+       <provider
+           android:authorities="com.example.mitpqsolutions.cached"
+           android:name=".CachedContent" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="com.example.mitpqsolutions.MainActivity" />
