@@ -1,9 +1,12 @@
 package com.example.mitpqsolutions;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -96,5 +99,21 @@ public class Active extends AppCompatActivity {
       ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,course_codes);
       adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
       spinner.setAdapter(adapter);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+      getMenuInflater().inflate(R.menu.active_menu,menu);
+      return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+      switch(item.getItemId())
+      {
+          case R.id.mnu_signout: startActivity(new Intent("android.intent.action.MAIN"));
+                                 return true;
+      }
+       return true;
     }
 }

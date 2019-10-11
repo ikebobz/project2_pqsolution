@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -38,31 +39,39 @@ public class Login extends AppCompatActivity
    if (new PingNetworkStatus().checkConnectionState(getApplicationContext())) {
     //initiateProgress();
     credentials = new HashMap<>();
-    credentials.put(str_email, passcrypt);
-    new Thread(new Runnable() {
+    credentials.put("email",str_email);
+    credentials.put("pass",passcrypt);
+    Thread secondary = new Thread(new Runnable() {
      @Override
      public void run() {
       HttpRequestInitiator hri = new HttpRequestInitiator();
-      jsonobj = hri.startRequest(BASE_URL + "addEntry.php", "GET", credentials);
+      jsonobj = hri.startRequest(BASE_URL + "authorize.php", "GET", credentials);
 
      }
-    }).start();
-
+    });
+    secondary.start();
+    secondary.join();
     if (jsonobj.getInt("success") == 1)
     {
-     JSONObject jobj = jsonobj.getJSONObject("data");
+     JSONArray array = jsonobj.getJSONArray("data");
+     if (array.length()==0)
+     {
+      Toast.makeText(this,"User does not exist",Toast.LENGTH_LONG).show();
+      return;
+     }
+     JSONObject jobj = array.getJSONObject(0);
      if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
       startActivity(new Intent("com.example.mitpqsolutions.Active"));
      else Toast.makeText(this,"Wrong Username/Password",Toast.LENGTH_LONG).show();
 
     }
    } else
-    Toast.makeText(this, "unable to establish remote connection", Toast.LENGTH_LONG).show();
+    Toast.makeText(this,jsonobj.getString("message"), Toast.LENGTH_LONG).show();
 
   }
   catch(Exception ex)
   {
-
+    ex.printStackTrace();
   }
 
  }

@@ -44,14 +44,16 @@ public class Registration extends AppCompatActivity
               parameters.put("email", email);
               parameters.put("pass", encrypted_phrase);
               //initiateProgress();
-              new Thread(new Runnable() {
+              Thread secondary = new Thread(new Runnable() {
                   @Override
                   public void run() {
                       HttpRequestInitiator hri = new HttpRequestInitiator();
                       jsonobj = hri.startRequest(Registration.BASE_URL + "addEntry.php", "POST", parameters);
 
                   }
-              }).start();
+              });
+              secondary.start();
+              secondary.join();
 
               if(jsonobj.getInt("success")==1)
                   Toast.makeText(this,jsonobj.getString("message"),Toast.LENGTH_LONG).show();
