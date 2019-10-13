@@ -1,14 +1,20 @@
 package com.example.mitpqsolutions;
 
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -29,6 +35,12 @@ public class Active extends AppCompatActivity {
     private ArrayList<String> course_codes;
     private ArrayList<HashMap<String, String>> courseList;
     private ProgressDialog pDialog;
+    private JSONObject jsObject;
+    private HashMap<String,String> parm;
+    HashMap<String,String> qaentries = new HashMap<>();
+    Object[] keys;
+    int counter;
+
     @Override
     public void onCreate(Bundle saved)
     {
@@ -111,9 +123,148 @@ public class Active extends AppCompatActivity {
     {
       switch(item.getItemId())
       {
-          case R.id.mnu_signout: startActivity(new Intent("android.intent.action.MAIN"));
+          case R.id.mnu_signout: //startActivity(new Intent("android.intent.action.MAIN"));
                                  return true;
       }
        return true;
+    }
+    public void search_click(View view)
+    {
+      EditText qbox = findViewById(R.id.editq);
+      String question = qbox.getText().toString();
+      TextView resultVw = findViewById(R.id.searchResult);
+      Spinner courses = findViewById(R.id.courses);
+      String selected = courses.getSelectedItem().toString();
+      if(!qaentries.isEmpty()) qaentries.clear();
+      //JSONObject jsObject;
+      try
+      {
+          //test locally
+          if(searchLocal(question,selected))return;
+          //test for connectivity
+       PingNetworkStatus netstate = new PingNetworkStatus();
+       boolean connected = netstate.checkConnectionState(getApplicationContext());
+       if(connected)
+       {
+           parm = new HashMap<String,String>();
+           parm.put("qdesc",question);
+           parm.put("course",selected);
+           Thread primary = new Thread(new Runnable(){
+            @Override
+            public void run()
+            {
+
+                HttpRequestInitiator hri = new HttpRequestInitiator();
+                jsObject = hri.startRequest(BASE_URL+"getanswer.php","GET",parm);
+            }
+        });
+        primary.start();
+        primary.join();
+        if(jsObject.getInt("success")==1)
+        {
+          JSONArray jarr = jsObject.getJSONArray("data");
+          if(jarr.length()==0) Toast.makeText(getApplicationContext(),"Answer not yet defined",Toast.LENGTH_LONG).show();
+          else //array is not empty
+             for(int i=0;i<jarr.length();i++)
+          {
+                  JSONObject jobj = jarr.getJSONObject(i);
+                  String qid = jobj.getString("qid");
+                  String course = jobj.getString("course");
+                  String qdesc = jobj.getString("description");
+                  String answer = jobj.getString("answer");
+                  qaentries.put(qdesc,answer);
+                  //resultVw.setText(answer);
+                  addItem(qid,course,qdesc,answer);
+          }
+             keys = qaentries.keySet().toArray();
+             String answer = qaentries.get(keys[0]);
+             resultVw.setText(answer);
+
+        }
+        else Toast.makeText(getApplicationContext(),jsObject.getString("message"),Toast.LENGTH_LONG).show();
+
+       }// end of if construct
+      }
+      catch(Exception ex)
+      {
+
+
+      }
+    }
+    public void addItem(String ID,String course,String que,String ans)
+    {
+        ContentValues values = new ContentValues();
+        values.put(CachedContent.QID,ID);
+        values.put(CachedContent.COURSE,course);
+        values.put(CachedContent.QDESC,que);
+        values.put(CachedContent.QANS,ans);
+        Uri track_uri = getContentResolver().insert(CachedContent.CONTENT_URI,values);
+        if(track_uri!=null)
+            Toast.makeText(getBaseContext(),"Answer Cached Successfully",Toast.LENGTH_LONG).show();
+        else  Toast.makeText(getBaseContext(),"Answer Caching Failed",Toast.LENGTH_LONG).show();
+
+
+    }
+    protected boolean searchLocal(String question,String selectCourse)
+    {
+        boolean ret = false;
+        counter = 0;
+        EditText qfield =  findViewById(R.id.editq);
+        TextView resultVw = findViewById(R.id.searchResult);
+        Uri content = Uri.parse(CachedContent.URL);
+        String[] projection = {CachedContent.QDESC,CachedContent.QANS};
+        String selClause = CachedContent.QDESC+" like ? and "+CachedContent.COURSE+"=?";
+        String[] args = {question,selectCourse};
+        Cursor c = getApplicationContext().getContentResolver().query(content,projection,selClause,args,CachedContent.QID);
+        int index0 = c.getColumnIndex(CachedContent.QDESC);
+        int index1 = c.getColumnIndex(CachedContent.QANS);
+        if(c!=null && c.getCount()>0)
+        {
+            while (c.moveToNext())
+            {
+                String ques = c.getString(index0);
+                String ans = c.getString(index1);
+                qaentries.put(ques,ans);
+
+            }
+            keys = qaentries.keySet().toArray();
+            String first = qaentries.get(keys[counter]);
+            resultVw.setText(first);
+            qfield.setText(keys[counter].toString());
+            ret = true;
+        }
+
+        return ret;
+    }
+    public void Forward_click(View vw)
+    {
+        EditText qfield =  findViewById(R.id.editq);
+        TextView resultVw = findViewById(R.id.searchResult);
+        counter++;
+        if(counter <= keys.length-1)
+      {
+          String first = qaentries.get(keys[counter]);
+          resultVw.setText(first);
+          qfield.setText(keys[counter].toString());
+
+      }
+        else
+        {
+            counter = 0;
+            String first = qaentries.get(keys[counter]);
+            resultVw.setText(first);
+            qfield.setText(keys[counter].toString());
+        }
+    }
+    public void Back_click(View vw)
+    {
+        EditText qfield =  findViewById(R.id.editq);
+        TextView resultVw = findViewById(R.id.searchResult);
+        if(counter==0) counter=keys.length;
+        counter--;
+        String first = qaentries.get(keys[counter]);
+        resultVw.setText(first);
+        qfield.setText(keys[counter].toString());
+
     }
 }

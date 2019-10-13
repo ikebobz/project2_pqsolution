@@ -13,9 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-       <provider
-           android:authorities="com.example.mitpqsolutions.cached"
-           android:name=".CachedContent" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="com.example.mitpqsolutions.MainActivity" />
@@ -43,6 +40,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="com.example.mitpqsolutions.CachedContent"
+            android:authorities="com.example.mitpqsolutions.CachedContent" />
     </application>
 
 </manifest>

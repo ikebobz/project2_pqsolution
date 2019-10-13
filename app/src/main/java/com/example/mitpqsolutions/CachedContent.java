@@ -18,9 +18,9 @@ import java.util.HashMap;
 
 public class CachedContent extends ContentProvider
 {
-  static final String PROVIDER = "com.example.mitpqsolutions.cached";
-  static final String URL = "content://"+PROVIDER + "/solutions";
-  static final Uri uri = Uri.parse(URL);
+  static final String PROVIDER_NAME = "com.example.mitpqsolutions.CachedContent";
+  static final String URL = "content://"+PROVIDER_NAME + "/solutions";
+  static final Uri CONTENT_URI = Uri.parse(URL);
 
   //defining field names
     static final String QID = "qid";
@@ -29,20 +29,20 @@ public class CachedContent extends ContentProvider
     static final String QANS = "qans";
 
     // declaring field aliases
-    static HashMap<String,String> projection_map;
+    static HashMap<String,String> projection_map = new HashMap<>();
 
     static final UriMatcher urimatcher;
     static
     {
      urimatcher = new UriMatcher(UriMatcher.NO_MATCH);
-     urimatcher.addURI(PROVIDER,"solutions",1);
-     urimatcher.addURI(PROVIDER,"solutions/#",2);
+     urimatcher.addURI(PROVIDER_NAME,"solutions",1);
+     urimatcher.addURI(PROVIDER_NAME,"solutions/#",2);
     }
     //initializing database parameters
     private SQLiteDatabase dbase;
     static final String DATABASE_NAME = "cached";
     static final String TABLE_NAME = "pqsolutions";
-    static final String creationQuery = "create table "+TABLE_NAME+" ( qid varchar(10) primary key autoincrement,courseID varchar(20),qdesc text,qans text)";
+    static final String creationQuery = "create table "+TABLE_NAME+" ( qid varchar(10) primary key ,courseID varchar(20),qdesc text,qans text)";
 
     //Defining the database helper class
     static class DatabaseHelper extends SQLiteOpenHelper
@@ -67,15 +67,21 @@ public class CachedContent extends ContentProvider
     @Override
     public boolean onCreate()
     {
-        Context context = getContext();
-        DatabaseHelper dbHelper = new DatabaseHelper(context);
+        try {
+            Context context = getContext();
+            DatabaseHelper dbHelper = new DatabaseHelper(context);
 
-        /**
-         * Create a write able database which will trigger its
-         * creation if it doesn't already exist.
-         */
+            /**
+             * Create a write able database which will trigger its
+             * creation if it doesn't already exist.
+             */
 
-        dbase = dbHelper.getWritableDatabase();
+            dbase = dbHelper.getWritableDatabase();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
         return (dbase == null)? false:true;
     }
     @Override
@@ -103,11 +109,11 @@ public class CachedContent extends ContentProvider
 
         switch (urimatcher.match(content_uri)) {
             case 1:
-                qb.setProjectionMap(projection_map);
+                //qb.setProjectionMap(projection_map);
                 break;
 
             case 2:
-                qb.appendWhere(  QID + "=" + uri.getPathSegments().get(1));
+                qb.appendWhere(  QID + "=" + content_uri.getPathSegments().get(1));
                 break;
 
             default:
@@ -125,7 +131,7 @@ public class CachedContent extends ContentProvider
         /**
          * register to watch a content URI for changes
          */
-        c.setNotificationUri(getContext().getContentResolver(), uri);
+        c.setNotificationUri(getContext().getContentResolver(), content_uri);
         return c;
     }
     @Override

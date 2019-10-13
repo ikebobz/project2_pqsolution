@@ -53,7 +53,8 @@
         android:id = "@+id/searchq"
         android:layout_below = "@id/editq"
         android:layout_marginTop="20dp"
-        android:text = "Search"/>
+        android:text = "Search"
+        android:onClick="search_click"/>
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="150dp"
@@ -67,6 +68,24 @@
             android:text = "I would like to invite you to attend our upcoming Liberal Arts department job networking event. The event will be held on the afternoon of February 1, 20XX. We wish to provide our graduating seniors with an opportunity to meet business leaders in the area who may be looking for new hires who hold degrees in the Liberal Arts."/>
 
     </ScrollView>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/next"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_marginTop="20dp"
+        android:text = "Next"
+        android:onClick="Forward_click"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/prev"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_toRightOf="@id/next"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft = "10dp"
+        android:text = "Previous"
+        android:onClick="Back_click"/>
 
 
 </RelativeLayout>
