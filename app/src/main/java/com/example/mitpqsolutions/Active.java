@@ -38,6 +38,7 @@ public class Active extends AppCompatActivity {
     private JSONObject jsObject;
     private HashMap<String,String> parm;
     HashMap<String,String> qaentries = new HashMap<>();
+    TextView resultVw;
     Object[] keys;
     int counter;
 
@@ -57,11 +58,8 @@ public class Active extends AppCompatActivity {
      {
          super.onPreExecute();
          //Display progress bar
-         pDialog = new ProgressDialog(Active.this);
-         pDialog.setMessage("Loading courses. Please wait...");
-         pDialog.setIndeterminate(false);
-         pDialog.setCancelable(false);
-         pDialog.show();
+         startProgress("Loading Courses....");
+
      }
      @Override
         protected String doInBackground(String... params)
@@ -123,8 +121,10 @@ public class Active extends AppCompatActivity {
     {
       switch(item.getItemId())
       {
-          case R.id.mnu_signout: //startActivity(new Intent("android.intent.action.MAIN"));
-                                 return true;
+          case R.id.mnu_signout: Intent intent = new Intent(Active.this,Login.class);
+                                                 startActivity(intent);
+                                                 finish();
+                                                 return true;
       }
        return true;
     }
@@ -132,15 +132,14 @@ public class Active extends AppCompatActivity {
     {
       EditText qbox = findViewById(R.id.editq);
       String question = qbox.getText().toString();
-      TextView resultVw = findViewById(R.id.searchResult);
+       resultVw = findViewById(R.id.searchResult);
       Spinner courses = findViewById(R.id.courses);
       String selected = courses.getSelectedItem().toString();
       if(!qaentries.isEmpty()) qaentries.clear();
       //JSONObject jsObject;
       try
       {
-          //test locally
-          if(searchLocal(question,selected))return;
+
           //test for connectivity
        PingNetworkStatus netstate = new PingNetworkStatus();
        boolean connected = netstate.checkConnectionState(getApplicationContext());
@@ -156,39 +155,67 @@ public class Active extends AppCompatActivity {
 
                 HttpRequestInitiator hri = new HttpRequestInitiator();
                 jsObject = hri.startRequest(BASE_URL+"getanswer.php","GET",parm);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try
+                        {
+                            if(jsObject.getInt("success")==1)
+                            {
+                                JSONArray jarr = jsObject.getJSONArray("data");
+                                if(jarr.length()==0) Toast.makeText(getApplicationContext(),"Answer not yet defined",Toast.LENGTH_LONG).show();
+                                else { //array is not empty
+                                    for (int i = 0; i < jarr.length(); i++) {
+
+                                        String colnum = "", rownum = "", content = "", combined = "";
+                                        JSONObject jobj = jarr.getJSONObject(i);
+                                        String qid = jobj.getString("qid");
+                                        String course = jobj.getString("course");
+                                        String qdesc = jobj.getString("description");
+                                        String answer = jobj.getString("answer");
+                                        content = jobj.getString("content");
+                                        if (!content.equals("X")) {
+                                            colnum = jobj.getString("colnum");
+                                            rownum = jobj.getString("rownum");
+                                            combined = colnum + rownum + content;
+                                        }
+
+                                        qaentries.put(qdesc, answer + "#" + combined);
+                                        //resultVw.setText(answer);
+                                        if(!testID(qid))
+                                        addItem(qid, course, qdesc, answer);
+                                    }
+
+                                    keys = qaentries.keySet().toArray();
+                                    String answer = qaentries.get(keys[0]);
+                                    resultVw.setText(answer.split("#")[0]);
+                                }
+
+                            }
+                            else Toast.makeText(getApplicationContext(),jsObject.getString("message"),Toast.LENGTH_LONG).show();
+
+
+
+
+                    }
+                        catch(Exception ex)
+                        {
+                            ex.printStackTrace();
+                        }
+                        pDialog.dismiss();
+                    }
+                });
             }
         });
+           startProgress("Fetching Results...");
         primary.start();
-        primary.join();
-        if(jsObject.getInt("success")==1)
-        {
-          JSONArray jarr = jsObject.getJSONArray("data");
-          if(jarr.length()==0) Toast.makeText(getApplicationContext(),"Answer not yet defined",Toast.LENGTH_LONG).show();
-          else //array is not empty
-             for(int i=0;i<jarr.length();i++)
-          {
-                  JSONObject jobj = jarr.getJSONObject(i);
-                  String qid = jobj.getString("qid");
-                  String course = jobj.getString("course");
-                  String qdesc = jobj.getString("description");
-                  String answer = jobj.getString("answer");
-                  qaentries.put(qdesc,answer);
-                  //resultVw.setText(answer);
-                  addItem(qid,course,qdesc,answer);
-          }
-             keys = qaentries.keySet().toArray();
-             String answer = qaentries.get(keys[0]);
-             resultVw.setText(answer);
-
-        }
-        else Toast.makeText(getApplicationContext(),jsObject.getString("message"),Toast.LENGTH_LONG).show();
-
-       }// end of if construct
+        //primary.join();
+       } else
+           searchLocal(question,selected);// end of if construct
       }
       catch(Exception ex)
       {
-
-
+         ex.printStackTrace();
       }
     }
     public void addItem(String ID,String course,String que,String ans)
@@ -244,7 +271,7 @@ public class Active extends AppCompatActivity {
         if(counter <= keys.length-1)
       {
           String first = qaentries.get(keys[counter]);
-          resultVw.setText(first);
+          resultVw.setText(first.split("#")[0]);
           qfield.setText(keys[counter].toString());
 
       }
@@ -252,7 +279,7 @@ public class Active extends AppCompatActivity {
         {
             counter = 0;
             String first = qaentries.get(keys[counter]);
-            resultVw.setText(first);
+            resultVw.setText(first.split("#")[0]);
             qfield.setText(keys[counter].toString());
         }
     }
@@ -263,8 +290,32 @@ public class Active extends AppCompatActivity {
         if(counter==0) counter=keys.length;
         counter--;
         String first = qaentries.get(keys[counter]);
-        resultVw.setText(first);
+        resultVw.setText(first.split("#")[0]);
         qfield.setText(keys[counter].toString());
+
+    }
+    protected void startProgress(String msg)
+    {
+        pDialog = new ProgressDialog(Active.this);
+        pDialog.setMessage(msg);
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+    }
+    protected boolean testID(String qid)
+    {
+
+        boolean exist = false;
+        Uri content = Uri.parse(CachedContent.URL);
+        String[] projection = {CachedContent.QID};
+        String selClause = CachedContent.QID+" =?";
+        String[] args = {qid};
+        Cursor c = getApplicationContext().getContentResolver().query(content,projection,selClause,args,CachedContent.QID);
+        if(c!=null && c.getCount()>0) exist = true;
+        return exist;
+    }
+    public void getTables(View view)
+    {
 
     }
 }

@@ -1,6 +1,7 @@
 package com.example.mitpqsolutions;
 
 import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -44,22 +45,8 @@ public class Registration extends AppCompatActivity
               parameters.put("email", email);
               parameters.put("pass", encrypted_phrase);
               //initiateProgress();
-              Thread secondary = new Thread(new Runnable() {
-                  @Override
-                  public void run() {
-                      HttpRequestInitiator hri = new HttpRequestInitiator();
-                      jsonobj = hri.startRequest(Registration.BASE_URL + "addEntry.php", "POST", parameters);
-
-                  }
-              });
-              secondary.start();
-              secondary.join();
-
-              if(jsonobj.getInt("success")==1)
-                  Toast.makeText(this,jsonobj.getString("message"),Toast.LENGTH_LONG).show();
-
-
-          } else
+          }
+            else
               Toast.makeText(this, "unable to establish remote connection", Toast.LENGTH_LONG).show();
       }
       catch (Exception ex)
@@ -76,5 +63,36 @@ public class Registration extends AppCompatActivity
         pDialog.setIndeterminate(false);
         pDialog.setCancelable(false);
         pDialog.show();
+    }
+    class RegisterTask extends AsyncTask<String,String,String>
+    {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpRequestInitiator hri = new HttpRequestInitiator();
+            jsonobj = hri.startRequest(Registration.BASE_URL + "addEntry.php", "POST", parameters);
+
+            return null;
+        }
+        @Override
+        protected void onPreExecute()
+        {
+            initiateProgress();
+        }
+        @Override
+        protected void onPostExecute(String code)
+        {
+            try
+            {
+                if(jsonobj.getInt("success")==1)
+                    Toast.makeText(getApplicationContext(),jsonobj.getString("message"),Toast.LENGTH_LONG).show();
+
+                pDialog.dismiss();
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
     }
 }

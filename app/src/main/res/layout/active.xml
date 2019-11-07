@@ -86,6 +86,16 @@
         android:layout_marginLeft = "10dp"
         android:text = "Previous"
         android:onClick="Back_click"/>
+    <Button
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/seetable"
+        android:text = "Tables"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_toRightOf="@id/prev"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart = "10dp"
+        android:onClick = "getTables"/>
 
 
 </RelativeLayout>

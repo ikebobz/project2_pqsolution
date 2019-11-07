@@ -1,6 +1,8 @@
 package com.example.mitpqsolutions;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -8,12 +10,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
 public class Login extends AppCompatActivity
 {
+ ProgressDialog pdialog;
+ String str_email,str_pass,passcrypt;
  @Override public void onCreate(Bundle saved)
  {
   super.onCreate(saved);
@@ -31,48 +36,72 @@ public class Login extends AppCompatActivity
  {
   EditText email = findViewById(R.id.txtEmail);
   EditText password = findViewById(R.id.txtPwd);
-  String str_email = email.getText().toString();
-  String str_pass = password.getText().toString();
+   str_email = email.getText().toString();
+   str_pass = password.getText().toString();
   try
   {
-   String passcrypt = AESCrypt.Encrypt(str_pass);
+    passcrypt = AESCrypt.Encrypt(str_pass);
    if (new PingNetworkStatus().checkConnectionState(getApplicationContext())) {
     //initiateProgress();
     credentials = new HashMap<>();
-    credentials.put("email",str_email);
-    credentials.put("pass",passcrypt);
-    Thread secondary = new Thread(new Runnable() {
-     @Override
-     public void run() {
-      HttpRequestInitiator hri = new HttpRequestInitiator();
-      jsonobj = hri.startRequest(BASE_URL + "authorize.php", "GET", credentials);
-
-     }
-    });
-    secondary.start();
-    secondary.join();
-    if (jsonobj.getInt("success") == 1)
-    {
-     JSONArray array = jsonobj.getJSONArray("data");
-     if (array.length()==0)
-     {
-      Toast.makeText(this,"User does not exist",Toast.LENGTH_LONG).show();
-      return;
-     }
-     JSONObject jobj = array.getJSONObject(0);
-     if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
-      startActivity(new Intent("com.example.mitpqsolutions.Active"));
-     else Toast.makeText(this,"Wrong Username/Password",Toast.LENGTH_LONG).show();
-
-    }
-   } else
-    Toast.makeText(this,jsonobj.getString("message"), Toast.LENGTH_LONG).show();
-
+    credentials.put("email", str_email);
+    credentials.put("pass", passcrypt);
+    new LoginTask().execute();
+   } else Toast.makeText(this,"Could not establish remote connection",Toast.LENGTH_LONG).show();
   }
   catch(Exception ex)
   {
     ex.printStackTrace();
   }
 
+ }
+ protected void initProgress()
+ {
+  pdialog = new ProgressDialog(this);
+  pdialog.setMessage("Logging in............");
+  pdialog.setIndeterminate(false);
+  pdialog.setCancelable(true);
+  pdialog.show();
+ }
+ class LoginTask extends AsyncTask<String,String,String>
+ {
+  @Override
+  protected void onPreExecute()
+  {
+   initProgress();
+  }
+  @Override
+  protected String doInBackground(String... params)
+  {
+   HttpRequestInitiator hri = new HttpRequestInitiator();
+   jsonobj = hri.startRequest(BASE_URL + "authorize.php", "GET", credentials);
+   return "";
+  }
+  @Override
+  protected void onPostExecute(String result)
+  {
+   try
+   {
+    if (jsonobj.getInt("success") == 1)
+    {
+     JSONArray array = jsonobj.getJSONArray("data");
+     if (array.length()==0)
+     {
+      Toast.makeText(getApplicationContext(),"User does not exist",Toast.LENGTH_LONG).show();
+      return;
+     }
+     JSONObject jobj = array.getJSONObject(0);
+     if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
+      startActivity(new Intent("com.example.mitpqsolutions.Active"));
+     else Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_LONG).show();
+
+    } else Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_LONG).show();
+    pdialog.dismiss();
+   }
+   catch(JSONException ex)
+   {
+    ex.printStackTrace();
+   }
+  }
  }
 }
