@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,14 +40,18 @@ public class Active extends AppCompatActivity {
     private HashMap<String,String> parm;
     HashMap<String,String> qaentries = new HashMap<>();
     TextView resultVw;
+    EditText qbox;
     Object[] keys;
     int counter;
+
 
     @Override
     public void onCreate(Bundle saved)
     {
       super.onCreate(saved);
       setContentView(R.layout.active);
+      Button btnTab = findViewById(R.id.setable);
+      btnTab.setEnabled(false);
       if(new PingNetworkStatus().checkConnectionState(getApplicationContext()))
       new FetchCoursesTask().execute();
       else Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_LONG).show();
@@ -130,7 +135,8 @@ public class Active extends AppCompatActivity {
     }
     public void search_click(View view)
     {
-      EditText qbox = findViewById(R.id.editq);
+        counter = 0;
+        qbox = findViewById(R.id.editq);
       String question = qbox.getText().toString();
        resultVw = findViewById(R.id.searchResult);
       Spinner courses = findViewById(R.id.courses);
@@ -158,6 +164,7 @@ public class Active extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Button btnTab = findViewById(R.id.setable);
                         try
                         {
                             if(jsObject.getInt("success")==1)
@@ -177,7 +184,7 @@ public class Active extends AppCompatActivity {
                                         if (!content.equals("X")) {
                                             colnum = jobj.getString("colnum");
                                             rownum = jobj.getString("rownum");
-                                            combined = colnum + rownum + content;
+                                            combined = colnum + "x" +rownum + "x" + content;
                                         }
 
                                         qaentries.put(qdesc, answer + "#" + combined);
@@ -187,7 +194,11 @@ public class Active extends AppCompatActivity {
                                     }
 
                                     keys = qaentries.keySet().toArray();
+                                    qbox.setText(keys[0].toString());
                                     String answer = qaentries.get(keys[0]);
+                                    if(!answer.split("#")[1].equals("00"))
+                                        btnTab.setEnabled(true);
+                                    else btnTab.setEnabled(false);
                                     resultVw.setText(answer.split("#")[0]);
                                 }
 
@@ -265,13 +276,18 @@ public class Active extends AppCompatActivity {
     }
     public void Forward_click(View vw)
     {
+        if(qaentries.isEmpty()) return;
         EditText qfield =  findViewById(R.id.editq);
+        Button btnTab = findViewById(R.id.setable);
         TextView resultVw = findViewById(R.id.searchResult);
         counter++;
         if(counter <= keys.length-1)
       {
           String first = qaentries.get(keys[counter]);
           resultVw.setText(first.split("#")[0]);
+          if(!first.split("#")[1].equals("00"))
+              btnTab.setEnabled(true);
+             else btnTab.setEnabled(false);
           qfield.setText(keys[counter].toString());
 
       }
@@ -280,17 +296,27 @@ public class Active extends AppCompatActivity {
             counter = 0;
             String first = qaentries.get(keys[counter]);
             resultVw.setText(first.split("#")[0]);
+            if(!first.split("#")[1].equals("00"))
+                btnTab.setEnabled(true);
+            else btnTab.setEnabled(false);
+
             qfield.setText(keys[counter].toString());
         }
     }
     public void Back_click(View vw)
     {
+        if(qaentries.isEmpty()) return;
         EditText qfield =  findViewById(R.id.editq);
         TextView resultVw = findViewById(R.id.searchResult);
+        Button btnTab = findViewById(R.id.setable);
         if(counter==0) counter=keys.length;
         counter--;
         String first = qaentries.get(keys[counter]);
         resultVw.setText(first.split("#")[0]);
+        if(!first.split("#")[1].equals("00"))
+            btnTab.setEnabled(true);
+        else btnTab.setEnabled(false);
+
         qfield.setText(keys[counter].toString());
 
     }
@@ -316,6 +342,16 @@ public class Active extends AppCompatActivity {
     }
     public void getTables(View view)
     {
+      Intent intent = new Intent("com.example.mitpqsolutions.TableDisplay");
+      if(qaentries.isEmpty()) return;
+      String tableinfo = qaentries.get(keys[counter]);
+      String colnum = tableinfo.split("x",3)[0].split("#")[1];
+      String rownum = tableinfo.split("x",3)[1];
+      String content = tableinfo.split("x",3)[2];
+      intent.putExtra("colsize",Integer.valueOf(colnum));
+      intent.putExtra("rowsize",Integer.valueOf(rownum));
+      intent.putExtra("content",content);
+      startActivity(intent);
 
     }
 }
