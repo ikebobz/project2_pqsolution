@@ -196,7 +196,7 @@ public class Active extends AppCompatActivity {
                                     keys = qaentries.keySet().toArray();
                                     qbox.setText(keys[0].toString());
                                     String answer = qaentries.get(keys[0]);
-                                    if(!answer.split("#")[1].equals("00"))
+                                    if(answer.split("#").length>1)
                                         btnTab.setEnabled(true);
                                     else btnTab.setEnabled(false);
                                     resultVw.setText(answer.split("#")[0]);
@@ -285,7 +285,7 @@ public class Active extends AppCompatActivity {
       {
           String first = qaentries.get(keys[counter]);
           resultVw.setText(first.split("#")[0]);
-          if(!first.split("#")[1].equals("00"))
+          if(first.split("#").length>1)
               btnTab.setEnabled(true);
              else btnTab.setEnabled(false);
           qfield.setText(keys[counter].toString());
@@ -296,7 +296,7 @@ public class Active extends AppCompatActivity {
             counter = 0;
             String first = qaentries.get(keys[counter]);
             resultVw.setText(first.split("#")[0]);
-            if(!first.split("#")[1].equals("00"))
+            if(first.split("#").length>1)
                 btnTab.setEnabled(true);
             else btnTab.setEnabled(false);
 
@@ -313,7 +313,7 @@ public class Active extends AppCompatActivity {
         counter--;
         String first = qaentries.get(keys[counter]);
         resultVw.setText(first.split("#")[0]);
-        if(!first.split("#")[1].equals("00"))
+        if(first.split("#").length>1)
             btnTab.setEnabled(true);
         else btnTab.setEnabled(false);
 
