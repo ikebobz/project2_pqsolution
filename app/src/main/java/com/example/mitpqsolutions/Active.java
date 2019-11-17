@@ -30,7 +30,7 @@ public class Active extends AppCompatActivity {
 
     private static final String KEY_SUCCESS = "success";
     private static final String KEY_DATA = "data";
-    private static final String BASE_URL = "http://10.0.2.2:8082/pqdoctor/";
+    private static final String BASE_URL = "http://nanawebapps.com/nanawebapps.com/";
     private static final String KEY_COURSE_ID = "code";
     private static final String KEY_COURSE_DESC = "description";
     private ArrayList<String> course_codes;
@@ -190,7 +190,7 @@ public class Active extends AppCompatActivity {
                                         qaentries.put(qdesc, answer + "#" + combined);
                                         //resultVw.setText(answer);
                                         if(!testID(qid))
-                                        addItem(qid, course, qdesc, answer);
+                                        addItem(qid, course, qdesc, answer+"#"+combined);
                                     }
 
                                     keys = qaentries.keySet().toArray();
@@ -248,6 +248,7 @@ public class Active extends AppCompatActivity {
         boolean ret = false;
         counter = 0;
         EditText qfield =  findViewById(R.id.editq);
+        Button btnTab = findViewById(R.id.setable);
         TextView resultVw = findViewById(R.id.searchResult);
         Uri content = Uri.parse(CachedContent.URL);
         String[] projection = {CachedContent.QDESC,CachedContent.QANS};
@@ -267,7 +268,10 @@ public class Active extends AppCompatActivity {
             }
             keys = qaentries.keySet().toArray();
             String first = qaentries.get(keys[counter]);
-            resultVw.setText(first);
+            if(first.split("#").length>1)
+                btnTab.setEnabled(true);
+            else btnTab.setEnabled(false);
+            resultVw.setText(first.split("#")[0]);
             qfield.setText(keys[counter].toString());
             ret = true;
         }

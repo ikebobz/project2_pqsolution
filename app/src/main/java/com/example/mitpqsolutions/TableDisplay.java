@@ -1,6 +1,7 @@
 package com.example.mitpqsolutions;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
@@ -23,6 +24,8 @@ public class TableDisplay extends AppCompatActivity
    String[] tables = content.split(" ");
    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
    params.setMargins(0,20,0,0);
+   LinearLayout.LayoutParams tbparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
+   tbparams.setMargins(10,5,10,0);
    int count =1;
    for(String table:tables)
    {
@@ -30,10 +33,11 @@ public class TableDisplay extends AppCompatActivity
        txtview.setGravity(Gravity.CENTER);
        txtview.setLayoutParams(params);
        txtview.setText("TABLE "+String.valueOf(count));
+       txtview.setTypeface(null, Typeface.BOLD);
        container.addView(txtview);
        String[] rows = table.split(";");
        TableLayout dataTable = new TableLayout(this);
-       //dataTable.setLayoutParams(params);
+       dataTable.setLayoutParams(tbparams);
        dataTable.setStretchAllColumns(true);
 
        //populating table
@@ -46,7 +50,8 @@ public class TableDisplay extends AppCompatActivity
                TextView tview = new TextView(this);
                tview.setGravity(Gravity.LEFT);
                tview.setBackgroundResource(R.drawable.cell_shape);
-               //tview.setPadding(3, 3, 3, 3);
+               tview.setPadding(7, 0, 0, 0);
+               if(k==0) tview.setTypeface(null, Typeface.BOLD);
                tview.setText(colValues[i]);
                row.addView(tview);
            }
