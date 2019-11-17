@@ -19,7 +19,7 @@ public class Registration extends AppCompatActivity
     HashMap<String,String> parameters;
     String encrypted_phrase;
     JSONObject jsonobj;
-    private static final String BASE_URL = "http://10.0.2.2:8082/pqdoctor/";
+    private static final String BASE_URL = "http://nanawebapps.com/nanawebapps.com/";
 
     @Override
     public void onCreate(Bundle saved)

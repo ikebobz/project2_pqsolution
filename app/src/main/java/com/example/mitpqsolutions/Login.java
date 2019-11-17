@@ -26,7 +26,7 @@ public class Login extends AppCompatActivity
  }
  JSONObject jsonobj;
  HashMap<String,String> credentials;
- private static final String BASE_URL = "http://10.0.2.2:8082/pqdoctor/";
+ private static final String BASE_URL = "http://nanawebapps.com/nanawebapps.com/";
 
  public void register_click(View view)
  {
