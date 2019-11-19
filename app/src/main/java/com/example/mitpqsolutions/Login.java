@@ -47,7 +47,7 @@ public class Login extends AppCompatActivity
     credentials.put("email", str_email);
     credentials.put("pass", passcrypt);
     new LoginTask().execute();
-   } else Toast.makeText(this,"Could not establish remote connection",Toast.LENGTH_LONG).show();
+   } else Toast.makeText(this,"Could not establish remote connection",Toast.LENGTH_SHORT).show();
   }
   catch(Exception ex)
   {
@@ -87,15 +87,16 @@ public class Login extends AppCompatActivity
      JSONArray array = jsonobj.getJSONArray("data");
      if (array.length()==0)
      {
-      Toast.makeText(getApplicationContext(),"User does not exist",Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(),"User does not exist",Toast.LENGTH_SHORT).show();
+      pdialog.dismiss();
       return;
      }
      JSONObject jobj = array.getJSONObject(0);
      if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
       startActivity(new Intent("com.example.mitpqsolutions.Active"));
-     else Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_LONG).show();
+     else Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_SHORT).show();
 
-    } else Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_LONG).show();
+    } else Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_SHORT).show();
     pdialog.dismiss();
    }
    catch(JSONException ex)

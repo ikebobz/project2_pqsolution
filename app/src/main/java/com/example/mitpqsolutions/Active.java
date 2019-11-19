@@ -54,7 +54,7 @@ public class Active extends AppCompatActivity {
       btnTab.setEnabled(false);
       if(new PingNetworkStatus().checkConnectionState(getApplicationContext()))
       new FetchCoursesTask().execute();
-      else Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_LONG).show();
+      else Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_SHORT).show();
     }
     private  class FetchCoursesTask extends AsyncTask<String,String,String>
     {
@@ -138,7 +138,8 @@ public class Active extends AppCompatActivity {
         counter = 0;
         qbox = findViewById(R.id.editq);
       String question = qbox.getText().toString();
-       resultVw = findViewById(R.id.searchResult);
+      resultVw = findViewById(R.id.searchResult);
+      final TextView txt_rescnt = findViewById(R.id.resltcnt);
       Spinner courses = findViewById(R.id.courses);
       String selected = courses.getSelectedItem().toString();
       if(!qaentries.isEmpty()) qaentries.clear();
@@ -170,7 +171,7 @@ public class Active extends AppCompatActivity {
                             if(jsObject.getInt("success")==1)
                             {
                                 JSONArray jarr = jsObject.getJSONArray("data");
-                                if(jarr.length()==0) Toast.makeText(getApplicationContext(),"Answer not yet defined",Toast.LENGTH_LONG).show();
+                                if(jarr.length()==0) Toast.makeText(getApplicationContext(),"Answer not yet defined",Toast.LENGTH_SHORT).show();
                                 else { //array is not empty
                                     for (int i = 0; i < jarr.length(); i++) {
 
@@ -200,10 +201,11 @@ public class Active extends AppCompatActivity {
                                         btnTab.setEnabled(true);
                                     else btnTab.setEnabled(false);
                                     resultVw.setText(answer.split("#")[0]);
+                                    txt_rescnt.setText("Number of Search Results: "+keys.length);
                                 }
 
                             }
-                            else Toast.makeText(getApplicationContext(),jsObject.getString("message"),Toast.LENGTH_LONG).show();
+                            else Toast.makeText(getApplicationContext(),jsObject.getString("message"),Toast.LENGTH_SHORT).show();
 
 
 
@@ -238,8 +240,8 @@ public class Active extends AppCompatActivity {
         values.put(CachedContent.QANS,ans);
         Uri track_uri = getContentResolver().insert(CachedContent.CONTENT_URI,values);
         if(track_uri!=null)
-            Toast.makeText(getBaseContext(),"Answer Cached Successfully",Toast.LENGTH_LONG).show();
-        else  Toast.makeText(getBaseContext(),"Answer Caching Failed",Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(),"Answer Cached Successfully",Toast.LENGTH_SHORT).show();
+        else  Toast.makeText(getBaseContext(),"Answer Caching Failed",Toast.LENGTH_SHORT).show();
 
 
     }

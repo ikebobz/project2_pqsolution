@@ -47,7 +47,7 @@ public class Registration extends AppCompatActivity
               //initiateProgress();
           }
             else
-              Toast.makeText(this, "unable to establish remote connection", Toast.LENGTH_LONG).show();
+              Toast.makeText(this, "unable to establish remote connection", Toast.LENGTH_SHORT).show();
       }
       catch (Exception ex)
       {
@@ -85,7 +85,7 @@ public class Registration extends AppCompatActivity
             try
             {
                 if(jsonobj.getInt("success")==1)
-                    Toast.makeText(getApplicationContext(),jsonobj.getString("message"),Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),jsonobj.getString("message"),Toast.LENGTH_SHORT).show();
 
                 pDialog.dismiss();
             }
