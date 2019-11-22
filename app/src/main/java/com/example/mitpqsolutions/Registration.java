@@ -1,6 +1,7 @@
 package com.example.mitpqsolutions;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -44,7 +45,10 @@ public class Registration extends AppCompatActivity
               parameters.put("names", fullnames);
               parameters.put("email", email);
               parameters.put("pass", encrypted_phrase);
-              //initiateProgress();
+             // initiateProgress();
+              new RegisterTask().execute();
+
+
           }
             else
               Toast.makeText(this, "unable to establish remote connection", Toast.LENGTH_LONG).show();
@@ -61,7 +65,7 @@ public class Registration extends AppCompatActivity
         pDialog = new ProgressDialog(this);
         pDialog.setMessage("Registering User. Please wait...");
         pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
+        pDialog.setCancelable(true);
         pDialog.show();
     }
     class RegisterTask extends AsyncTask<String,String,String>
@@ -84,10 +88,15 @@ public class Registration extends AppCompatActivity
         {
             try
             {
-                if(jsonobj.getInt("success")==1)
-                    Toast.makeText(getApplicationContext(),jsonobj.getString("message"),Toast.LENGTH_LONG).show();
+               // if(jsonobj.getInt("success")==1)
+                Toast.makeText(getApplicationContext(),jsonobj.getString("message"),Toast.LENGTH_LONG).show();
+
 
                 pDialog.dismiss();
+                if(jsonobj.getInt("success")==1) {
+                    Intent intent = new Intent(Registration.this, Login.class);
+                    startActivity(intent);
+                }
             }
             catch(Exception ex)
             {
