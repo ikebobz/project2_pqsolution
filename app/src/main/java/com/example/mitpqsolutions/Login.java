@@ -2,6 +2,8 @@ package com.example.mitpqsolutions;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,8 +48,9 @@ public class Login extends AppCompatActivity
     credentials = new HashMap<>();
     credentials.put("email", str_email);
     credentials.put("pass", passcrypt);
+    //credentials.put("key",getKey());
     new LoginTask().execute();
-   } else Toast.makeText(this,"Could not establish remote connection",Toast.LENGTH_LONG).show();
+   } else Toast.makeText(this,"Could not establish remote connection",Toast.LENGTH_SHORT).show();
   }
   catch(Exception ex)
   {
@@ -87,15 +90,20 @@ public class Login extends AppCompatActivity
      JSONArray array = jsonobj.getJSONArray("data");
      if (array.length()==0)
      {
-      Toast.makeText(getApplicationContext(),"User does not exist",Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(),"User does not exist",Toast.LENGTH_SHORT).show();
+      pdialog.dismiss();
       return;
      }
      JSONObject jobj = array.getJSONObject(0);
      if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
+     {
+      if(jobj.getString("key").equals(getKey()))
       startActivity(new Intent("com.example.mitpqsolutions.Active"));
-     else Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_LONG).show();
+      else Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT);
+     }
+     else Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_SHORT).show();
 
-    } else Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_LONG).show();
+    } else Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_SHORT).show();
     pdialog.dismiss();
    }
    catch(JSONException ex)
@@ -104,4 +112,28 @@ public class Login extends AppCompatActivity
    }
   }
  }
+ protected String getKey()
+ {
+  String key = "";
+  try {
+   Uri content = Uri.parse(CachedContent.installInfoURL);
+   String[] projection = {CachedContent.INSTALLID};
+   String selClause = "";
+   String[] args = null;
+   Cursor c = getApplicationContext().getContentResolver().query(content, projection, selClause, args, CachedContent.INSTALLID);
+   int index = c.getColumnIndex(CachedContent.INSTALLID);
+   if (c.moveToNext())
+    key = c.getString(index);
+
+   //Toast.makeText(getApplicationContext(), key, Toast.LENGTH_SHORT);
+
+  }
+  catch(Exception ex)
+  {
+   ex.printStackTrace();
+  }
+  return key;
+
+ }
+
 }

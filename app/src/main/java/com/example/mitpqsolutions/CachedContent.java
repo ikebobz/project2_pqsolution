@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import java.util.Random;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -20,13 +21,17 @@ public class CachedContent extends ContentProvider
 {
   static final String PROVIDER_NAME = "com.example.mitpqsolutions.CachedContent";
   static final String URL = "content://"+PROVIDER_NAME + "/solutions";
+  static final String installInfoURL = "content://"+PROVIDER_NAME + "/installInfo";
   static final Uri CONTENT_URI = Uri.parse(URL);
+  static final Uri INSTALLINFO_URI = Uri.parse(installInfoURL);
+  //astatic final double install_key = new Random().nextInt(10000);
 
   //defining field names
     static final String QID = "qid";
     static final String COURSE = "courseID";
     static final String QDESC = "qdesc";
     static final String QANS = "qans";
+    static final String INSTALLID = "INSID";
 
     // declaring field aliases
     static HashMap<String,String> projection_map = new HashMap<>();
@@ -37,13 +42,16 @@ public class CachedContent extends ContentProvider
      urimatcher = new UriMatcher(UriMatcher.NO_MATCH);
      urimatcher.addURI(PROVIDER_NAME,"solutions",1);
      urimatcher.addURI(PROVIDER_NAME,"solutions/#",2);
+     urimatcher.addURI(PROVIDER_NAME,"installInfo",3);
     }
     //initializing database parameters
     private SQLiteDatabase dbase;
     static final String DATABASE_NAME = "cached";
     static final String TABLE_NAME = "pqsolutions";
+    static final String TABLE2 = "installData";
     static final String creationQuery = "create table "+TABLE_NAME+" ( qid varchar(10) primary key ,courseID varchar(20),qdesc text,qans text)";
-
+    static final String createInstallDataTable = "create table "+TABLE2+" (INSID varchar(50))";
+    static final String insertKey = "insert into "+TABLE2+" values ('"+String.valueOf(new Random().nextInt(10000))+"')";
     //Defining the database helper class
     static class DatabaseHelper extends SQLiteOpenHelper
     {
@@ -55,11 +63,14 @@ public class CachedContent extends ContentProvider
         public void onCreate(SQLiteDatabase db)
       {
        db.execSQL(creationQuery);
+       db.execSQL(createInstallDataTable);
+       db.execSQL(insertKey);
       }
       @Override
         public void onUpgrade(SQLiteDatabase db,int oldver, int newver)
       {
          db.execSQL("drop table if exists "+ TABLE_NAME);
+          db.execSQL("drop table if exists "+ TABLE2);
          onCreate(db);
       }
 
@@ -104,26 +115,33 @@ public class CachedContent extends ContentProvider
     @Override
     public Cursor query(Uri content_uri, String[] projection, String selection, String[] selArgs, String sortOrder)
     {
+        boolean solutions = true;
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-        qb.setTables(TABLE_NAME);
+        //qb.setTables(TABLE_NAME);
 
         switch (urimatcher.match(content_uri)) {
             case 1:
+                qb.setTables(TABLE_NAME);
                 //qb.setProjectionMap(projection_map);
                 break;
 
             case 2:
+                qb.setTables(TABLE_NAME);
                 qb.appendWhere(  QID + "=" + content_uri.getPathSegments().get(1));
+                break;
+            case 3:
+                qb.setTables(TABLE2);
+                solutions = false;
                 break;
 
             default:
         }
 
         if (sortOrder == null || sortOrder == ""){
-            /**
-             * By default sort on student names
-             */
+
+            if(solutions)
             sortOrder = QID;
+            else sortOrder = INSTALLID;
         }
 
         Cursor c = qb.query(dbase,projection,selection,
