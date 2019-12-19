@@ -63,7 +63,7 @@
         android:layout_marginTop="20dp"/>
     <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:id = "@+id/scrllvw1"
         android:layout_below = "@id/resltcnt"
         android:layout_marginTop="20dp"
