@@ -6,7 +6,7 @@
         android:id="@+id/activescrn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:text="Past Questions Centre"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below = "@id/activescrn"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="Please select a course"
         />
     <Spinner
@@ -25,7 +25,7 @@
         android:layout_height = "wrap_content"
         android:id = "@+id/courses"
         android:layout_below = "@id/activescrn"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_toEndOf="@id/lbl_sel_course"
         android:layout_marginStart = "10dp">
 
@@ -35,14 +35,14 @@
         android:layout_height = "wrap_content"
         android:id = "@+id/lbl_quest_snip"
         android:layout_below = "@id/lbl_sel_course"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text = "Enter part of the question"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height = "80dp"
         android:id = "@+id/editq"
         android:layout_below = "@id/lbl_quest_snip"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/shape"
@@ -52,7 +52,7 @@
         android:layout_width="wrap_content"
         android:id = "@+id/searchq"
         android:layout_below = "@id/editq"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text = "Search"
         android:onClick="search_click"/>
     <TextView
@@ -60,13 +60,13 @@
         android:layout_height="wrap_content"
         android:id = "@+id/resltcnt"
         android:layout_below = "@id/searchq"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="10dp"/>
     <ScrollView
         android:layout_width="wrap_content"
-        android:layout_height="75dp"
+        android:layout_height="120dp"
         android:id = "@+id/scrllvw1"
         android:layout_below = "@id/resltcnt"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         >
         <TextView android:layout_height="wrap_content"
             android:layout_width="wrap_content"
@@ -79,7 +79,7 @@
         android:layout_width="wrap_content"
         android:id = "@+id/next"
         android:layout_below = "@id/scrllvw1"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:text = "Next"
         android:onClick="Forward_click"/>
     <Button
@@ -88,7 +88,7 @@
         android:id = "@+id/prev"
         android:layout_below = "@id/scrllvw1"
         android:layout_toRightOf="@id/next"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:layout_marginLeft = "10dp"
         android:text = "Previous"
         android:onClick="Back_click"/>
@@ -99,7 +99,7 @@
         android:text = "Tables"
         android:layout_below = "@id/scrllvw1"
         android:layout_toRightOf="@id/prev"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:layout_marginStart = "10dp"
         android:onClick = "getTables"
         android:clickable="false"/>

@@ -21,7 +21,7 @@ public class TableDisplay extends AppCompatActivity
    int rowsize = intent.getIntExtra("rowsize",0);
    String content = intent.getStringExtra("content");
    LinearLayout container = findViewById(R.id.container);
-   String[] tables = content.split(" ");
+   String[] tables = content.split("&");
    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
    params.setMargins(0,20,0,0);
    LinearLayout.LayoutParams tbparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
