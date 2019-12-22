@@ -40,7 +40,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name = ".TableDisplay">
+        <activity android:name = ".TableDisplay"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name = "com.example.mitpqsolutions.TableDisplay"/>
                 <category android:name = "android.intent.category.DEFAULT"/>

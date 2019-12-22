@@ -354,7 +354,7 @@ public class Active extends AppCompatActivity {
       String colnum = tableinfo.split("x",3)[0].split("#")[1];
       String rownum = tableinfo.split("x",3)[1];
       String content = tableinfo.split("x",3)[2];
-      intent.putExtra("colsize",Integer.valueOf(colnum));
+      intent.putExtra("colsize",colnum);
       intent.putExtra("rowsize",Integer.valueOf(rownum));
       intent.putExtra("content",content);
       startActivity(intent);

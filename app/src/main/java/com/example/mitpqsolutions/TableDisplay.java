@@ -17,7 +17,8 @@ public class TableDisplay extends AppCompatActivity
    super.onCreate(saved);
    setContentView(R.layout.tablelay);
    Intent intent = getIntent();
-   int colsize = intent.getIntExtra("colsize",0);
+   String colsize = intent.getStringExtra("colsize");
+   String[] tabNames = colsize.split(",");
    int rowsize = intent.getIntExtra("rowsize",0);
    String content = intent.getStringExtra("content");
    LinearLayout container = findViewById(R.id.container);
@@ -27,12 +28,13 @@ public class TableDisplay extends AppCompatActivity
    LinearLayout.LayoutParams tbparams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT);
    tbparams.setMargins(10,5,10,0);
    int count =1;
+   int tabcount = 0;
    for(String table:tables)
    {
        TextView txtview = new TextView(this);
        txtview.setGravity(Gravity.CENTER);
        txtview.setLayoutParams(params);
-       txtview.setText("TABLE "+String.valueOf(count));
+       txtview.setText(tabNames[tabcount]);
        txtview.setTypeface(null, Typeface.BOLD);
        container.addView(txtview);
        String[] rows = table.split(";");
@@ -59,6 +61,7 @@ public class TableDisplay extends AppCompatActivity
        }
        container.addView(dataTable);
        count++;
+       tabcount++;
    }
 
  }
