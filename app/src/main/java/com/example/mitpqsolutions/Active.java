@@ -39,9 +39,11 @@ public class Active extends AppCompatActivity {
     private JSONObject jsObject;
     private HashMap<String,String> parm;
     HashMap<String,String> qaentries = new HashMap<>();
+    HashMap<String,String> imageurls = new HashMap<>();
     TextView resultVw;
     EditText qbox;
     Object[] keys;
+    Button btnImage;
     int counter;
 
 
@@ -52,6 +54,8 @@ public class Active extends AppCompatActivity {
       setContentView(R.layout.active);
       Button btnTab = findViewById(R.id.setable);
       btnTab.setEnabled(false);
+      btnImage = findViewById(R.id.seeimg);
+      btnImage.setEnabled(false);
       if(new PingNetworkStatus().checkConnectionState(getApplicationContext()))
       new FetchCoursesTask().execute();
       else Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_SHORT).show();
@@ -136,13 +140,15 @@ public class Active extends AppCompatActivity {
     public void search_click(View view)
     {
         counter = 0;
+
         qbox = findViewById(R.id.editq);
-      String question = qbox.getText().toString();
+      String question = "%"+qbox.getText().toString()+"%";
       resultVw = findViewById(R.id.searchResult);
       final TextView txt_rescnt = findViewById(R.id.resltcnt);
       Spinner courses = findViewById(R.id.courses);
       String selected = courses.getSelectedItem().toString();
       if(!qaentries.isEmpty()) qaentries.clear();
+      if(!imageurls.isEmpty()) imageurls.clear();
       //JSONObject jsObject;
       try
       {
@@ -181,6 +187,7 @@ public class Active extends AppCompatActivity {
                                         String course = jobj.getString("course");
                                         String qdesc = jobj.getString("description");
                                         String answer = jobj.getString("answer");
+                                        String imageurl = jobj.getString("imageurl");
                                         content = jobj.getString("content");
                                         if (!content.equals("X")) {
                                             colnum = jobj.getString("colnum");
@@ -189,6 +196,7 @@ public class Active extends AppCompatActivity {
                                         }
 
                                         qaentries.put(qdesc, answer + "#" + combined);
+                                        imageurls.put(qdesc,imageurl);
                                         //resultVw.setText(answer);
                                         if(!testID(qid))
                                         addItem(qid, course, qdesc, answer+"#"+combined);
@@ -200,6 +208,9 @@ public class Active extends AppCompatActivity {
                                     if(answer.split("#").length>1)
                                         btnTab.setEnabled(true);
                                     else btnTab.setEnabled(false);
+                                    if(!imageurls.get(keys[0]).equals(""))
+                                        btnImage.setEnabled(true);
+                                     else btnImage.setEnabled(false);
                                     resultVw.setText(answer.split("#")[0]);
                                     txt_rescnt.setText("Number of Search Results: "+keys.length);
                                 }
@@ -294,6 +305,9 @@ public class Active extends AppCompatActivity {
           if(first.split("#").length>1)
               btnTab.setEnabled(true);
              else btnTab.setEnabled(false);
+          if(!imageurls.get(keys[counter]).equals(""))
+              btnImage.setEnabled(true);
+          else btnImage.setEnabled(false);
           qfield.setText(keys[counter].toString());
 
       }
@@ -305,7 +319,9 @@ public class Active extends AppCompatActivity {
             if(first.split("#").length>1)
                 btnTab.setEnabled(true);
             else btnTab.setEnabled(false);
-
+            if(!imageurls.get(keys[counter]).equals(""))
+                btnImage.setEnabled(true);
+            else btnImage.setEnabled(false);
             qfield.setText(keys[counter].toString());
         }
     }
@@ -322,6 +338,9 @@ public class Active extends AppCompatActivity {
         if(first.split("#").length>1)
             btnTab.setEnabled(true);
         else btnTab.setEnabled(false);
+        if(!imageurls.get(keys[counter]).equals(""))
+            btnImage.setEnabled(true);
+        else btnImage.setEnabled(false);
 
         qfield.setText(keys[counter].toString());
 
@@ -359,5 +378,18 @@ public class Active extends AppCompatActivity {
       intent.putExtra("content",content);
       startActivity(intent);
 
+    }
+    public void btnClearClicked(View view)
+    {
+     EditText editText  = findViewById(R.id.editq);
+     editText.getText().clear();
+
+    }
+    public void imgvwrClicked(View view)
+    {
+      Intent intent = new Intent("com.example.mitpqsolutions.ImageViewer");
+      if(imageurls.isEmpty()) return;
+      intent.putExtra("imageurl",imageurls.get(keys[counter]));
+      startActivity(intent);
     }
 }

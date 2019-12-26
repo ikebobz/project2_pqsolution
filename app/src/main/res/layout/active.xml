@@ -55,6 +55,15 @@
         android:layout_marginTop="10dp"
         android:text = "Search"
         android:onClick="search_click"/>
+    <Button android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/clear"
+        android:text = "Clear"
+        android:layout_below = "@id/editq"
+        android:layout_toRightOf = "@id/searchq"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart = "10dp"
+        android:onClick="btnClearClicked"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,7 +98,7 @@
         android:layout_below = "@id/scrllvw1"
         android:layout_toRightOf="@id/next"
         android:layout_marginTop="15dp"
-        android:layout_marginLeft = "10dp"
+        android:layout_marginLeft = "5dp"
         android:text = "Previous"
         android:onClick="Back_click"/>
     <Button
@@ -100,8 +109,19 @@
         android:layout_below = "@id/scrllvw1"
         android:layout_toRightOf="@id/prev"
         android:layout_marginTop="15dp"
-        android:layout_marginStart = "10dp"
+        android:layout_marginStart = "5dp"
         android:onClick = "getTables"
+        android:clickable="false"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/seeimg"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_toRightOf="@id/setable"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft = "5dp"
+        android:text = "Images"
+        android:onClick="imgvwrClicked"
         android:clickable="false"/>
 
 
