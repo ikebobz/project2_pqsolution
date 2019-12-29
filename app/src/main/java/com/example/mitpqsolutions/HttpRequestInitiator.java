@@ -1,6 +1,7 @@
 package com.example.mitpqsolutions;
 
 import android.net.Uri;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -8,12 +9,14 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Map;
 
 public class HttpRequestInitiator //class that would make request for data
 {
- HttpRequestInitiator()
+    boolean timeout = false;
+    HttpRequestInitiator()
  {
 
  }
@@ -54,6 +57,7 @@ public class HttpRequestInitiator //class that would make request for data
       }
 
 
+      //urlcon.setConnectTimeout(30000);
       urlcon.connect();
       istream = urlcon.getInputStream();
       BufferedReader reader = new BufferedReader(new InputStreamReader(istream));
@@ -66,9 +70,10 @@ public class HttpRequestInitiator //class that would make request for data
       json = sb.toString();
       jsonobj = new JSONObject(json);
 
-
-
-
+  }
+  catch(SocketTimeoutException ex)
+  {
+   timeout = true;
   }
   catch(Exception ex)
   {

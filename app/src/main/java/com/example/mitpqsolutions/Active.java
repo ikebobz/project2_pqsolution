@@ -2,12 +2,19 @@ package com.example.mitpqsolutions;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -137,10 +147,10 @@ public class Active extends AppCompatActivity {
       }
        return true;
     }
+    String imageurl;
     public void search_click(View view)
     {
         counter = 0;
-
         qbox = findViewById(R.id.editq);
       String question = "%"+qbox.getText().toString()+"%";
       resultVw = findViewById(R.id.searchResult);
@@ -187,7 +197,7 @@ public class Active extends AppCompatActivity {
                                         String course = jobj.getString("course");
                                         String qdesc = jobj.getString("description");
                                         String answer = jobj.getString("answer");
-                                        String imageurl = jobj.getString("imageurl");
+                                        imageurl = jobj.getString("imageurl");
                                         content = jobj.getString("content");
                                         if (!content.equals("X")) {
                                             colnum = jobj.getString("colnum");
@@ -197,9 +207,19 @@ public class Active extends AppCompatActivity {
 
                                         qaentries.put(qdesc, answer + "#" + combined);
                                         imageurls.put(qdesc,imageurl);
+
                                         //resultVw.setText(answer);
                                         if(!testID(qid))
-                                        addItem(qid, course, qdesc, answer+"#"+combined);
+                                        {
+                                            addItem(qid, course, qdesc, answer + "#" + combined, getLocalPath(imageurl));
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                 saveImage(imageurl);
+                                                }
+                                            }).start();
+
+                                        }
                                     }
 
                                     keys = qaentries.keySet().toArray();
@@ -242,13 +262,15 @@ public class Active extends AppCompatActivity {
          ex.printStackTrace();
       }
     }
-    public void addItem(String ID,String course,String que,String ans)
+    public void addItem(String ID,String course,String que,String ans,String imageurl)
     {
+        //Toast.makeText(getBaseContext(),imageurl,Toast.LENGTH_SHORT).show();
         ContentValues values = new ContentValues();
         values.put(CachedContent.QID,ID);
         values.put(CachedContent.COURSE,course);
         values.put(CachedContent.QDESC,que);
         values.put(CachedContent.QANS,ans);
+        values.put(CachedContent.IMAGEURL,imageurl);
         Uri track_uri = getContentResolver().insert(CachedContent.CONTENT_URI,values);
         if(track_uri!=null)
             Toast.makeText(getBaseContext(),"Answer Cached Successfully",Toast.LENGTH_SHORT).show();
@@ -258,25 +280,33 @@ public class Active extends AppCompatActivity {
     }
     protected boolean searchLocal(String question,String selectCourse)
     {
+        //Toast.makeText(getApplicationContext(),"Searching locally...",Toast.LENGTH_SHORT).show();
+        qaentries.clear();
+        imageurls.clear();
         boolean ret = false;
         counter = 0;
         EditText qfield =  findViewById(R.id.editq);
+        TextView txt_rescnt = findViewById(R.id.resltcnt);
         Button btnTab = findViewById(R.id.setable);
         TextView resultVw = findViewById(R.id.searchResult);
         Uri content = Uri.parse(CachedContent.URL);
-        String[] projection = {CachedContent.QDESC,CachedContent.QANS};
+        String[] projection = {CachedContent.QDESC,CachedContent.QANS,CachedContent.IMAGEURL};
         String selClause = CachedContent.QDESC+" like ? and "+CachedContent.COURSE+"=?";
         String[] args = {question,selectCourse};
         Cursor c = getApplicationContext().getContentResolver().query(content,projection,selClause,args,CachedContent.QID);
         int index0 = c.getColumnIndex(CachedContent.QDESC);
         int index1 = c.getColumnIndex(CachedContent.QANS);
+        int index2 = c.getColumnIndex(CachedContent.IMAGEURL);
+
         if(c!=null && c.getCount()>0)
         {
             while (c.moveToNext())
             {
                 String ques = c.getString(index0);
                 String ans = c.getString(index1);
+                String url = c.getString(index2);
                 qaentries.put(ques,ans);
+                imageurls.put(ques,url);
 
             }
             keys = qaentries.keySet().toArray();
@@ -284,8 +314,12 @@ public class Active extends AppCompatActivity {
             if(first.split("#").length>1)
                 btnTab.setEnabled(true);
             else btnTab.setEnabled(false);
+            if (!imageurls.get(keys[counter]).equals(""))
+                btnImage.setEnabled(true);
+            else btnImage.setEnabled(false);
             resultVw.setText(first.split("#")[0]);
             qfield.setText(keys[counter].toString());
+            txt_rescnt.setText("Number of Search Results: "+keys.length);
             ret = true;
         }
 
@@ -305,9 +339,11 @@ public class Active extends AppCompatActivity {
           if(first.split("#").length>1)
               btnTab.setEnabled(true);
              else btnTab.setEnabled(false);
-          if(!imageurls.get(keys[counter]).equals(""))
-              btnImage.setEnabled(true);
-          else btnImage.setEnabled(false);
+
+                 if (!imageurls.get(keys[counter]).equals(""))
+                     btnImage.setEnabled(true);
+                 else btnImage.setEnabled(false);
+
           qfield.setText(keys[counter].toString());
 
       }
@@ -382,7 +418,9 @@ public class Active extends AppCompatActivity {
     public void btnClearClicked(View view)
     {
      EditText editText  = findViewById(R.id.editq);
+     TextView answervw  = findViewById(R.id.searchResult);
      editText.getText().clear();
+     answervw.setText("");
 
     }
     public void imgvwrClicked(View view)
@@ -391,5 +429,50 @@ public class Active extends AppCompatActivity {
       if(imageurls.isEmpty()) return;
       intent.putExtra("imageurl",imageurls.get(keys[counter]));
       startActivity(intent);
+    }
+    protected String getLocalPath(String url)
+    {
+        if(url.equals("")) return "";
+        String name = url.substring( url.lastIndexOf('/')+1, url.length() );
+        //String appFolder = "PQDoctor";
+       // ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File path = new File(Environment.getExternalStorageDirectory() + "/Download/PQDoctor/");
+        if(!path.exists())
+            path.mkdir();
+        File imageFile = new File(path, name);
+        path.mkdirs();
+        return url.split("&")[0]+"&"+imageFile.getAbsolutePath();
+    }
+    public void saveImage(String url )
+    {
+        File imageFile = null;
+        try
+        {
+            String name = url.substring( url.lastIndexOf('/')+1, url.length() );
+            URL imageurl = new URL(url.split("&")[1]);
+            Bitmap bm = BitmapFactory.decodeStream(imageurl.openConnection().getInputStream());
+            //String appFolder = "profile";
+            File path = new File(Environment.getExternalStorageDirectory() + "/Download/PQDoctor/");
+            if(!path.exists())
+                path.mkdir();
+            imageFile = new File(path, name);
+
+            FileOutputStream out = new FileOutputStream(imageFile);
+            bm.compress(Bitmap.CompressFormat.PNG, 100, out); // Compress Image
+            out.flush();
+            out.close();
+
+            // Tell the media scanner about the new file so that it is
+            // immediately available to the user.
+            MediaScannerConnection.scanFile(getApplicationContext(),new String[] { imageFile.getAbsolutePath() }, null,new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                    Log.i("ExternalStorage", "Scanned " + path + ":");
+                    Log.i("ExternalStorage", "-> uri=" + uri);
+                }
+            });
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        //Toast.makeText(getApplicationContext(),"Images saved to "+imageFile,Toast.LENGTH_SHORT).show();
     }
 }

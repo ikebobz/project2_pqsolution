@@ -32,6 +32,7 @@ public class CachedContent extends ContentProvider
     static final String QDESC = "qdesc";
     static final String QANS = "qans";
     static final String INSTALLID = "INSID";
+    static final String IMAGEURL = "imageurl";
 
     // declaring field aliases
     static HashMap<String,String> projection_map = new HashMap<>();
@@ -49,7 +50,7 @@ public class CachedContent extends ContentProvider
     static final String DATABASE_NAME = "cached";
     static final String TABLE_NAME = "pqsolutions";
     static final String TABLE2 = "installData";
-    static final String creationQuery = "create table "+TABLE_NAME+" ( qid varchar(10) primary key ,courseID varchar(20),qdesc text,qans text)";
+    static final String creationQuery = "create table "+TABLE_NAME+" ( qid varchar(10) primary key ,courseID varchar(20),qdesc text,qans text,imageurl text)";
     static final String createInstallDataTable = "create table "+TABLE2+" (INSID varchar(50))";
     static final String insertKey = "insert into "+TABLE2+" values ('"+String.valueOf(new Random().nextInt(10000))+"')";
     //Defining the database helper class

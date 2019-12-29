@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Login extends AppCompatActivity
 {
@@ -27,6 +29,7 @@ public class Login extends AppCompatActivity
   setContentView(R.layout.activity_login);
  }
  JSONObject jsonobj;
+ boolean finished = false;
  HashMap<String,String> credentials;
  private static final String BASE_URL = "http://nanawebapps.com/nanawebapps.com/";
 
@@ -34,6 +37,7 @@ public class Login extends AppCompatActivity
  {
   startActivity(new Intent("com.example.mitpqsolutions.Registration"));
  }
+ Timer timer;
  public void login_click(View view)
  {
   EditText email = findViewById(R.id.txtEmail);
@@ -65,6 +69,7 @@ public class Login extends AppCompatActivity
   pdialog.setIndeterminate(false);
   pdialog.setCancelable(true);
   pdialog.show();
+
  }
  class LoginTask extends AsyncTask<String,String,String>
  {
@@ -78,11 +83,13 @@ public class Login extends AppCompatActivity
   {
    HttpRequestInitiator hri = new HttpRequestInitiator();
    jsonobj = hri.startRequest(BASE_URL + "authorize.php", "GET", credentials);
+   finished = true;
    return "";
   }
   @Override
   protected void onPostExecute(String result)
   {
+   if(jsonobj==null) return;
    try
    {
     if (jsonobj.getInt("success") == 1)
@@ -99,11 +106,14 @@ public class Login extends AppCompatActivity
      {
       if(jobj.getString("key").equals(getKey()))
       startActivity(new Intent("com.example.mitpqsolutions.Active"));
-      else Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT);
+      else
+       Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT).show();
      }
-     else Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_SHORT).show();
+     else
+      Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_SHORT).show();
 
-    } else Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_SHORT).show();
+    } else
+     Toast.makeText(getApplicationContext(),jsonobj.getString("message"), Toast.LENGTH_SHORT).show();
     pdialog.dismiss();
    }
    catch(JSONException ex)
