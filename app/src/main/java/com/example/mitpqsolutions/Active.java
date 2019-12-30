@@ -105,6 +105,7 @@ public class Active extends AppCompatActivity {
                      map.put(KEY_COURSE_DESC, courseName);
                      course_codes.add(courseId);
                      courseList.add(map);
+                     if(!testCourseID(courseId)) addCourse(courseId,courseName);
                  }
              }
          } catch (JSONException e)
@@ -280,6 +281,18 @@ public class Active extends AppCompatActivity {
 
 
     }
+    public void addCourse(String courseid, String description)
+    {
+        ContentValues values = new ContentValues();
+        values.put(CachedContent.coursecode,courseid);
+        values.put(CachedContent.description,description);
+
+        Uri track_uri = getContentResolver().insert(CachedContent.uri_courses,values);
+        if(track_uri!=null)
+            Toast.makeText(getBaseContext(),"Course Successfully Synced",Toast.LENGTH_SHORT).show();
+        else  Toast.makeText(getBaseContext(),"Course Syncing Failed",Toast.LENGTH_SHORT).show();
+    }
+
     protected boolean searchLocal(String question,String selectCourse)
     {
         //Toast.makeText(getApplicationContext(),"Searching locally...",Toast.LENGTH_SHORT).show();
@@ -400,6 +413,17 @@ public class Active extends AppCompatActivity {
         String selClause = CachedContent.QID+" =?";
         String[] args = {qid};
         Cursor c = getApplicationContext().getContentResolver().query(content,projection,selClause,args,CachedContent.QID);
+        if(c!=null && c.getCount()>0) exist = true;
+        return exist;
+    }
+    protected boolean testCourseID(String courseid)
+    {
+        boolean exist = false;
+        Uri content = Uri.parse(CachedContent.url_courses);
+        String[] projection = {CachedContent.coursecode};
+        String selClause = CachedContent.coursecode+" =?";
+        String[] args = {courseid};
+        Cursor c = getApplicationContext().getContentResolver().query(content,projection,selClause,args,CachedContent.coursecode);
         if(c!=null && c.getCount()>0) exist = true;
         return exist;
     }
