@@ -55,6 +55,7 @@ public class Active extends AppCompatActivity {
     Object[] keys;
     Button btnImage;
     int counter;
+    static boolean runoffline = false;
 
 
     @Override
@@ -68,7 +69,8 @@ public class Active extends AppCompatActivity {
       btnImage.setEnabled(false);
       if(new PingNetworkStatus().checkConnectionState(getApplicationContext()))
       new FetchCoursesTask().execute();
-      else Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_SHORT).show();
+      if(!runoffline)
+          Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_SHORT).show();
     }
     private  class FetchCoursesTask extends AsyncTask<String,String,String>
     {
@@ -166,7 +168,7 @@ public class Active extends AppCompatActivity {
           //test for connectivity
        PingNetworkStatus netstate = new PingNetworkStatus();
        boolean connected = netstate.checkConnectionState(getApplicationContext());
-       if(connected)
+       if(connected && !runoffline)
        {
            parm = new HashMap<String,String>();
            parm.put("qdesc",question);

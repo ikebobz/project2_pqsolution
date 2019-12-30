@@ -24,6 +24,8 @@ public class CachedContent extends ContentProvider
   static final String installInfoURL = "content://"+PROVIDER_NAME + "/installInfo";
   static final Uri CONTENT_URI = Uri.parse(URL);
   static final Uri INSTALLINFO_URI = Uri.parse(installInfoURL);
+  static final String url_courses = "content://"+PROVIDER_NAME + "/courses";
+  static final Uri uri_courses = Uri.parse(url_courses);
   //astatic final double install_key = new Random().nextInt(10000);
 
   //defining field names
@@ -33,6 +35,8 @@ public class CachedContent extends ContentProvider
     static final String QANS = "qans";
     static final String INSTALLID = "INSID";
     static final String IMAGEURL = "imageurl";
+    static final String coursecode = "coursecode";
+    static final String description = "description";
 
     // declaring field aliases
     static HashMap<String,String> projection_map = new HashMap<>();
@@ -44,14 +48,17 @@ public class CachedContent extends ContentProvider
      urimatcher.addURI(PROVIDER_NAME,"solutions",1);
      urimatcher.addURI(PROVIDER_NAME,"solutions/#",2);
      urimatcher.addURI(PROVIDER_NAME,"installInfo",3);
+     urimatcher.addURI(PROVIDER_NAME,"courses",4);
     }
     //initializing database parameters
     private SQLiteDatabase dbase;
     static final String DATABASE_NAME = "cached";
     static final String TABLE_NAME = "pqsolutions";
     static final String TABLE2 = "installData";
+    static final String TABLE3 = "courses";
     static final String creationQuery = "create table "+TABLE_NAME+" ( qid varchar(10) primary key ,courseID varchar(20),qdesc text,qans text,imageurl text)";
     static final String createInstallDataTable = "create table "+TABLE2+" (INSID varchar(50))";
+    static final String query3  = "create table "+TABLE3+" ( coursecode varchar(20) primary key ,description text)";
     static final String insertKey = "insert into "+TABLE2+" values ('"+String.valueOf(new Random().nextInt(10000))+"')";
     //Defining the database helper class
     static class DatabaseHelper extends SQLiteOpenHelper
@@ -65,6 +72,7 @@ public class CachedContent extends ContentProvider
       {
        db.execSQL(creationQuery);
        db.execSQL(createInstallDataTable);
+       db.execSQL(query3);
        db.execSQL(insertKey);
       }
       @Override
@@ -72,6 +80,7 @@ public class CachedContent extends ContentProvider
       {
          db.execSQL("drop table if exists "+ TABLE_NAME);
           db.execSQL("drop table if exists "+ TABLE2);
+          db.execSQL("drop table if exists "+ TABLE3);
          onCreate(db);
       }
 
@@ -99,7 +108,16 @@ public class CachedContent extends ContentProvider
     @Override
     public Uri insert(Uri uri, ContentValues values) throws SQLException
     {
-        long rowID = dbase.insert(TABLE_NAME, "", values);
+
+        String table = "";
+        switch(urimatcher.match(uri))
+        {
+            case 1: table = TABLE_NAME;break;
+            case 4 : table = TABLE3;break;
+            default: break;
+        }
+
+        long rowID = dbase.insert(table, "", values);
 
         /**
          * If record is added successfully
@@ -116,7 +134,7 @@ public class CachedContent extends ContentProvider
     @Override
     public Cursor query(Uri content_uri, String[] projection, String selection, String[] selArgs, String sortOrder)
     {
-        boolean solutions = true;
+        int table = 0;
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         //qb.setTables(TABLE_NAME);
 
@@ -132,7 +150,11 @@ public class CachedContent extends ContentProvider
                 break;
             case 3:
                 qb.setTables(TABLE2);
-                solutions = false;
+                table = 1;
+                break;
+            case 4:
+                qb.setTables(TABLE3);
+                table = 2;
                 break;
 
             default:
@@ -140,9 +162,10 @@ public class CachedContent extends ContentProvider
 
         if (sortOrder == null || sortOrder == ""){
 
-            if(solutions)
+            if(table == 0)
             sortOrder = QID;
-            else sortOrder = INSTALLID;
+            if(table == 1) sortOrder = INSTALLID;
+            if(table == 2) sortOrder = coursecode;
         }
 
         Cursor c = qb.query(dbase,projection,selection,
@@ -166,6 +189,10 @@ public class CachedContent extends ContentProvider
                 count = dbase.delete( TABLE_NAME, QID +  " = " + id +
                                 (!TextUtils.isEmpty(selection) ? " AND (" + selection + ')' : ""), selectionArgs);
                 break;
+            case 4:
+                count = dbase.delete(TABLE3, selection, selectionArgs);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -186,6 +213,10 @@ public class CachedContent extends ContentProvider
                 count = dbase.update(TABLE_NAME, values, QID + " = " + uri.getPathSegments().get(1) +
                                 (!TextUtils.isEmpty(selection) ? " AND (" +selection + ')' : ""), selectionArgs);
                 break;
+            case 4:
+                count = dbase.update(TABLE3, values, selection, selectionArgs);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unknown URI " + uri );
         }

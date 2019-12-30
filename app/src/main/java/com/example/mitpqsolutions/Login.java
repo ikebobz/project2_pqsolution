@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -40,6 +41,15 @@ public class Login extends AppCompatActivity
  Timer timer;
  public void login_click(View view)
  {
+  Active.runoffline = false;
+  CheckBox chkbox = findViewById(R.id.offcheck);
+  if(chkbox.isChecked())
+  {
+   Active.runoffline = true;
+   startActivity(new Intent("com.example.mitpqsolutions.Active"));
+   return;
+  }
+
   EditText email = findViewById(R.id.txtEmail);
   EditText password = findViewById(R.id.txtPwd);
    str_email = email.getText().toString();
