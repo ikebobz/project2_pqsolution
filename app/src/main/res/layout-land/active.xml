@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/activescrn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Past Questions Centre"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_below = "@id/activescrn"
+        android:id = "@+id/lbl_sel_course">
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:text="Please select a course"
+        android:layout_weight="3"/>
+    <Spinner
+        android:layout_width = "0dp"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/courses"
+        android:layout_marginStart = "10dp"
+        android:layout_weight="1">
+
+    </Spinner></LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/lbl_quest_snip"
+        android:layout_below = "@id/lbl_sel_course"
+        android:layout_marginTop="10dp"
+        android:text = "Enter part of the question"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height = "80dp"
+        android:id = "@+id/editq"
+        android:layout_below = "@id/lbl_quest_snip"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:hint = "Please enter question part/fragment e.g Draw ER diagrams..."
+        android:inputType="text|textMultiLine"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/searchq"
+        android:layout_below = "@id/editq"
+        android:layout_marginTop="10dp"
+        android:text = "Search"
+        android:onClick="search_click"/>
+    <Button android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/clear"
+        android:text = "Clear"
+        android:layout_below = "@id/editq"
+        android:layout_toRightOf = "@id/searchq"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart = "10dp"
+        android:onClick="btnClearClicked"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id = "@+id/resltcnt"
+        android:layout_below = "@id/searchq"
+        android:layout_marginTop="10dp"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:id = "@+id/scrllvw1"
+        android:layout_below = "@id/resltcnt"
+        android:layout_marginTop="10dp"
+        >
+        <TextView android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:id = "@+id/searchResult"
+            android:text = "Results from solution search to specified question would be displayed here."/>
+
+    </ScrollView>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/next"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_marginTop="15dp"
+        android:text = "Next"
+        android:onClick="Forward_click"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/prev"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_toRightOf="@id/next"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft = "5dp"
+        android:text = "Previous"
+        android:onClick="Back_click"/>
+    <Button
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/setable"
+        android:text = "Tables"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_toRightOf="@id/prev"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart = "5dp"
+        android:onClick = "getTables"
+        android:clickable="false"/>
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id = "@+id/seeimg"
+        android:layout_below = "@id/scrllvw1"
+        android:layout_toRightOf="@id/setable"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft = "5dp"
+        android:text = "Images"
+        android:onClick="imgvwrClicked"
+        android:clickable="false"/>
+
+
+</RelativeLayout>
