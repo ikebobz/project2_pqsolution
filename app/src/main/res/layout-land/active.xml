@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TextView
         android:id="@+id/activescrn"
         android:layout_width="match_parent"
@@ -72,19 +75,18 @@
         android:id = "@+id/resltcnt"
         android:layout_below = "@id/searchq"
         android:layout_marginTop="10dp"/>
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:id = "@+id/scrllvw1"
         android:layout_below = "@id/resltcnt"
-        android:layout_marginTop="10dp"
-        >
+        android:layout_marginTop="10dp">
         <TextView android:layout_height="match_parent"
             android:layout_width="wrap_content"
             android:id = "@+id/searchResult"
             android:text = "Results from solution search to specified question would be displayed here."/>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
     <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -125,6 +127,5 @@
         android:text = "Images"
         android:onClick="imgvwrClicked"
         android:clickable="false"/>
-
-
-</RelativeLayout>
+    </RelativeLayout>
+</ScrollView>

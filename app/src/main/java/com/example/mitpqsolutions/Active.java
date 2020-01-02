@@ -67,13 +67,49 @@ public class Active extends AppCompatActivity {
       btnTab.setEnabled(false);
       btnImage = findViewById(R.id.seeimg);
       btnImage.setEnabled(false);
+      if(runoffline)
+      {
+          populateSpinnerLocal();
+          return;
+      }
       if(new PingNetworkStatus().checkConnectionState(getApplicationContext()))
       new FetchCoursesTask().execute();
-      if(!runoffline)
+      else
           Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_SHORT).show();
+
+    }
+    @Override protected void onSaveInstanceState(Bundle packet)
+    {
+        try {
+            super.onSaveInstanceState(packet);
+            Spinner spinner = findViewById(R.id.courses);
+            TextView display = findViewById(R.id.searchResult);
+            packet.putString("result", display.getText().toString());
+            packet.putInt("selected", spinner.getSelectedItemPosition());
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    @Override protected void onRestoreInstanceState(Bundle packet)
+    {
+        try {
+            super.onRestoreInstanceState(packet);
+            Spinner spinner = findViewById(R.id.courses);
+            TextView display = findViewById(R.id.searchResult);
+            display.setText(packet.getString("result"));
+            spinner.setSelection(packet.getInt("selected"));
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
     }
     private  class FetchCoursesTask extends AsyncTask<String,String,String>
     {
+      int numcourses;
      @Override
      protected void onPreExecute()
      {
@@ -105,7 +141,8 @@ public class Active extends AppCompatActivity {
                      map.put(KEY_COURSE_DESC, courseName);
                      course_codes.add(courseId);
                      courseList.add(map);
-                     if(!testCourseID(courseId)) addCourse(courseId,courseName);
+                     if(!testCourseID(courseId))
+                         numcourses+=addCourse(courseId,courseName);
                  }
              }
          } catch (JSONException e)
@@ -119,6 +156,8 @@ public class Active extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 public void run() {
                     populateSpinner();
+                    if(numcourses>0)
+                    Toast.makeText(getApplicationContext(),numcourses+" new course(s) added ",Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -205,7 +244,7 @@ public class Active extends AppCompatActivity {
                                         if (!content.equals("X")) {
                                             colnum = jobj.getString("colnum");
                                             rownum = jobj.getString("rownum");
-                                            combined = colnum + "x" +rownum + "x" + content;
+                                            combined = colnum + "%" +rownum + "%" + content;
                                         }
 
                                         qaentries.put(qdesc, answer + "#" + combined);
@@ -281,16 +320,25 @@ public class Active extends AppCompatActivity {
 
 
     }
-    public void addCourse(String courseid, String description)
+    public int addCourse(String courseid, String description)
     {
-        ContentValues values = new ContentValues();
-        values.put(CachedContent.coursecode,courseid);
-        values.put(CachedContent.description,description);
 
-        Uri track_uri = getContentResolver().insert(CachedContent.uri_courses,values);
-        if(track_uri!=null)
-            Toast.makeText(getBaseContext(),"Course Successfully Synced",Toast.LENGTH_SHORT).show();
-        else  Toast.makeText(getBaseContext(),"Course Syncing Failed",Toast.LENGTH_SHORT).show();
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CachedContent.coursecode, courseid);
+            values.put(CachedContent.description, description);
+
+            Uri track_uri = getContentResolver().insert(CachedContent.uri_courses, values);
+            if (track_uri != null)
+                return 1;
+            else
+                return 0;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return 0;
     }
 
     protected boolean searchLocal(String question,String selectCourse)
@@ -401,7 +449,7 @@ public class Active extends AppCompatActivity {
         pDialog = new ProgressDialog(Active.this);
         pDialog.setMessage(msg);
         pDialog.setIndeterminate(false);
-        pDialog.setCancelable(false);
+        pDialog.setCancelable(true);
         pDialog.show();
     }
     protected boolean testID(String qid)
@@ -419,26 +467,40 @@ public class Active extends AppCompatActivity {
     protected boolean testCourseID(String courseid)
     {
         boolean exist = false;
-        Uri content = Uri.parse(CachedContent.url_courses);
-        String[] projection = {CachedContent.coursecode};
-        String selClause = CachedContent.coursecode+" =?";
-        String[] args = {courseid};
-        Cursor c = getApplicationContext().getContentResolver().query(content,projection,selClause,args,CachedContent.coursecode);
-        if(c!=null && c.getCount()>0) exist = true;
+        try {
+
+            Uri content = Uri.parse(CachedContent.url_courses);
+            String[] projection = {CachedContent.coursecode};
+            String selClause = CachedContent.coursecode + " =?";
+            String[] args = {courseid};
+            Cursor c = getApplicationContext().getContentResolver().query(content, projection, selClause, args, CachedContent.coursecode);
+            if (c != null && c.getCount() > 0) exist = true;
+
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
         return exist;
     }
     public void getTables(View view)
     {
-      Intent intent = new Intent("com.example.mitpqsolutions.TableDisplay");
-      if(qaentries.isEmpty()) return;
-      String tableinfo = qaentries.get(keys[counter]);
-      String colnum = tableinfo.split("x",3)[0].split("#")[1];
-      String rownum = tableinfo.split("x",3)[1];
-      String content = tableinfo.split("x",3)[2];
-      intent.putExtra("colsize",colnum);
-      intent.putExtra("rowsize",Integer.valueOf(rownum));
-      intent.putExtra("content",content);
-      startActivity(intent);
+      try {
+          Intent intent = new Intent("com.example.mitpqsolutions.TableDisplay");
+          if (qaentries.isEmpty()) return;
+          String tableinfo = qaentries.get(keys[counter]);
+          String colnum = tableinfo.split("%", 3)[0].split("#")[1];
+          String rownum = tableinfo.split("%", 3)[1];
+          String content = tableinfo.split("%", 3)[2];
+          intent.putExtra("colsize", colnum);
+          intent.putExtra("rowsize", Integer.valueOf(rownum));
+          intent.putExtra("content", content);
+          startActivity(intent);
+      }
+      catch(Exception ex)
+      {
+          Toast.makeText(getApplicationContext(),ex.getMessage(),Toast.LENGTH_SHORT).show();
+      }
 
     }
     public void btnClearClicked(View view)
@@ -455,6 +517,25 @@ public class Active extends AppCompatActivity {
       if(imageurls.isEmpty()) return;
       intent.putExtra("imageurl",imageurls.get(keys[counter]));
       startActivity(intent);
+    }
+    protected void populateSpinnerLocal()
+    {
+        ArrayList<String> codes = new ArrayList<>();
+        Uri content = CachedContent.uri_courses;
+        String[] projection = {CachedContent.coursecode};
+        Cursor c = getApplicationContext().getContentResolver().query(content,projection,null,null,CachedContent.coursecode);
+        int index0 = c.getColumnIndex(CachedContent.coursecode);
+        if(c!=null && c.getCount()>0) {
+            while (c.moveToNext()) {
+                String courseid = c.getString(index0);
+                codes.add(courseid);
+            }
+         Spinner spinner = findViewById(R.id.courses);
+         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,codes);
+         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+         spinner.setAdapter(adapter);
+        }
+
     }
     protected String getLocalPath(String url)
     {

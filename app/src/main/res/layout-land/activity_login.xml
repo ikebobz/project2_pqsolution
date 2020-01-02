@@ -8,7 +8,7 @@
             android:id="@+id/loginscrn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
+            android:layout_marginTop="20dp"
             android:text="Application Login"
             android:textSize="25sp"
             android:textStyle="bold"
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="100dp"
             android:layout_marginEnd="100dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:text="Email"/>
         <EditText
             android:id="@+id/txtEmail"
@@ -60,7 +60,7 @@
         <TextView android:id="@+id/lnkRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:text="New User? Register here"
             android:gravity="center"
             android:textSize="20sp"
