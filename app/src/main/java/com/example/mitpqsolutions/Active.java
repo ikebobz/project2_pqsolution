@@ -244,7 +244,7 @@ public class Active extends AppCompatActivity {
                                         if (!content.equals("X")) {
                                             colnum = jobj.getString("colnum");
                                             rownum = jobj.getString("rownum");
-                                            combined = colnum + "%" +rownum + "%" + content;
+                                            combined = colnum + "@" +rownum + "@" + content;
                                         }
 
                                         qaentries.put(qdesc, answer + "#" + combined);
@@ -489,9 +489,9 @@ public class Active extends AppCompatActivity {
           Intent intent = new Intent("com.example.mitpqsolutions.TableDisplay");
           if (qaentries.isEmpty()) return;
           String tableinfo = qaentries.get(keys[counter]);
-          String colnum = tableinfo.split("%", 3)[0].split("#")[1];
-          String rownum = tableinfo.split("%", 3)[1];
-          String content = tableinfo.split("%", 3)[2];
+          String colnum = tableinfo.split("@", 3)[0].split("#")[1];
+          String rownum = tableinfo.split("@", 3)[1];
+          String content = tableinfo.split("@", 3)[2];
           intent.putExtra("colsize", colnum);
           intent.putExtra("rowsize", Integer.valueOf(rownum));
           intent.putExtra("content", content);
