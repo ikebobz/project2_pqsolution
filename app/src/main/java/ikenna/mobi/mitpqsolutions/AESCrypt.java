@@ -1,4 +1,4 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.util.Base64;
 

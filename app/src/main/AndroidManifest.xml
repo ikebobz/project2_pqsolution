@@ -1,61 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.mitpqsolutions">
+    package="ikenna.mobi.mitpqsolutions">
     <uses-permission android:name = "android.permission.INTERNET" />
     <uses-permission android:name = "android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/appicon"
+        android:icon="@mipmap/appicon2"
         android:label = "@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name="ikenna.mobi.mitpqsolutions.MainActivity">
             <intent-filter>
-                <action android:name="com.example.mitpqsolutions.MainActivity" />
+                <action android:name="ikenna.mobi.mitpqsolutions.MainActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-       <activity android:name = ".Login">
+       <activity android:name = "ikenna.mobi.mitpqsolutions.Home">
            <intent-filter>
-               <action android:name="android.intent.action.MAIN"/>
-               <category android:name="android.intent.category.LAUNCHER" />
+               <action android:name="ikenna.mobi.mitpqsolutions.Home"/>
+               <category android:name="android.intent.category.DEFAULT" />
            </intent-filter>
        </activity>
-        <activity android:name=".Registration">
+        <activity android:name="ikenna.mobi.mitpqsolutions.Registration">
             <intent-filter>
-                <action android:name="com.example.mitpqsolutions.Registration" />
+                <action android:name="ikenna.mobi.mitpqsolutions.Registration" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".Active">
+        <activity android:name="ikenna.mobi.mitpqsolutions.Active">
             <intent-filter>
-                <action android:name="com.example.mitpqsolutions.Active" />
+                <action android:name="ikenna.mobi.mitpqsolutions.Active" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name = ".TableDisplay"
+        <activity android:name = "ikenna.mobi.mitpqsolutions.TableDisplay"
             android:screenOrientation="landscape">
             <intent-filter>
-                <action android:name = "com.example.mitpqsolutions.TableDisplay"/>
+                <action android:name = "ikenna.mobi.mitpqsolutions.TableDisplay"/>
                 <category android:name = "android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name = ".ImageViewer">
+        <activity android:name = "ikenna.mobi.mitpqsolutions.ImageViewer">
             <intent-filter>
-            <action android:name = "com.example.mitpqsolutions.ImageViewer"/>
+            <action android:name = "ikenna.mobi.mitpqsolutions.ImageViewer"/>
             <category android:name = "android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name = "ikenna.mobi.mitpqsolutions.QAShow">
+            <intent-filter>
+                <action android:name = "ikenna.mobi.mitpqsolutions.QAShow"/>
+                <category android:name = "android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name = "ikenna.mobi.mitpqsolutions.FullView">
+            <intent-filter>
+                <action android:name = "ikenna.mobi.mitpqsolutions.FullView"/>
+                <category android:name = "android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Login">
+            <intent-filter>
+                <action android:name = "android.intent.action.MAIN" />
+                <category android:name = "android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <provider
-            android:name="com.example.mitpqsolutions.CachedContent"
-            android:authorities="com.example.mitpqsolutions.CachedContent" />
+            android:name="ikenna.mobi.mitpqsolutions.CachedContent"
+            android:authorities="ikenna.mobi.mitpqsolutions.CachedContent" />
     </application>
 
 </manifest>

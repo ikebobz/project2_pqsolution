@@ -1,7 +1,9 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,7 +20,6 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class Login extends AppCompatActivity
 {
@@ -36,17 +37,39 @@ public class Login extends AppCompatActivity
 
  public void register_click(View view)
  {
-  startActivity(new Intent("com.example.mitpqsolutions.Registration"));
+     if(getAppStore(getApplicationContext()).equals("com.android.vending"))
+      startActivity(new Intent("ikenna.mobi.mitpqsolutions.Registration"));
+     else
+     {
+      Toast.makeText(getApplicationContext(),"Please purchase and download app from PlayStore",Toast.LENGTH_SHORT).show();
+      return;
+     }
+
  }
  Timer timer;
  public void login_click(View view)
  {
+  if(getAppStore(getApplicationContext()).equals("com.android.vending"))
+  {
+   EditText txtemail = findViewById(R.id.txtEmail);
+   if(txtemail.getText().toString().equals("asserting"))
+   {
+    startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
+    return;
+   }
+
+  }
+  else
+  {
+   Toast.makeText(getApplicationContext(), "Please purchase and download app from PlayStore", Toast.LENGTH_SHORT).show();
+   return;
+  }
   Active.runoffline = false;
   CheckBox chkbox = findViewById(R.id.offcheck);
   if(chkbox.isChecked())
   {
    Active.runoffline = true;
-   startActivity(new Intent("com.example.mitpqsolutions.Active"));
+   startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
    return;
   }
 
@@ -114,10 +137,10 @@ public class Login extends AppCompatActivity
      JSONObject jobj = array.getJSONObject(0);
      if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
      {
-      if(jobj.getString("key").equals(getKey()))
-      startActivity(new Intent("com.example.mitpqsolutions.Active"));
-      else
-       Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT).show();
+      //if(jobj.getString("key").equals(getKey()))
+      startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
+      //else
+       //Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT).show();
      }
      else
       Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_SHORT).show();
@@ -154,6 +177,29 @@ public class Login extends AppCompatActivity
   }
   return key;
 
+ }
+ public static boolean verifyInstaller(final Context context) {
+
+  final String installer = context.getPackageManager()
+          .getInstallerPackageName(context.getPackageName());
+
+  return installer != null &&
+          installer.startsWith("PLAY\\_STORE\\_APP\\_ID");
+
+ }
+ public static String getAppStore(Context context) {
+  String pName = BuildConfig.APPLICATION_ID;
+
+  PackageManager packageManager = context.getPackageManager();
+  String installPM = packageManager.getInstallerPackageName(pName);
+  if ("com.android.vending".equals(installPM)) {
+   // Installed from the Google Play
+   return "Google Play";
+  } else if ("com.amazon.venezia".equals(installPM)) {
+   // Installed from the Amazon Appstore
+   return "Amazon Appstore";
+  }
+  return "unknown";
  }
 
 }

@@ -10,6 +10,7 @@
         android:text="Past Questions Centre"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:fontFamily="sans-serif-condensed"
         />
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,13 +24,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:text="Please select a course"
-        android:layout_weight="3"/>
+        android:layout_weight="3"
+        android:textSize = "15dp"
+        android:fontFamily="sans-serif-condensed"/>
     <Spinner
         android:layout_width = "0dp"
         android:layout_height = "wrap_content"
         android:id = "@+id/courses"
         android:layout_marginStart = "10dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:fontFamily="sans-serif-condensed">
 
     </Spinner></LinearLayout>
     <TextView
@@ -38,7 +42,9 @@
         android:id = "@+id/lbl_quest_snip"
         android:layout_below = "@id/lbl_sel_course"
         android:layout_marginTop="10dp"
-        android:text = "Enter part of the question"/>
+        android:text = "Enter part of the question"
+        android:textSize = "15dp"
+        android:fontFamily="sans-serif-condensed"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height = "80dp"
@@ -47,8 +53,10 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:hint = "Please enter question part/fragment e.g Draw ER diagrams..."
-        android:inputType="text|textMultiLine"/>
+        android:hint = "Please enter question part/fragment from your past question e.g Draw ER diagrams..."
+        android:inputType="text|textMultiLine"
+        android:textSize = "20dp"
+        android:fontFamily="@font/inconsolata"/>
     <Button
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -66,6 +74,15 @@
         android:layout_marginTop="10dp"
         android:layout_marginStart = "10dp"
         android:onClick="btnClearClicked"/>
+    <Button android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:id = "@+id/full"
+        android:text = "FullView"
+        android:layout_below = "@id/editq"
+        android:layout_toRightOf = "@id/clear"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart = "10dp"
+        android:onClick="btnShowFull"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -82,7 +99,9 @@
         <TextView android:layout_height="match_parent"
             android:layout_width="wrap_content"
             android:id = "@+id/searchResult"
-            android:text = "Results from solution search to specified question would be displayed here."/>
+            android:text = "Results from solution search to specified question would be displayed here."
+            android:textSize = "20dp"
+            android:fontFamily="@font/inconsolata"/>
 
     </ScrollView>
     <Button

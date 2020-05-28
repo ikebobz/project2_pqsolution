@@ -1,4 +1,4 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.app.ProgressDialog;
 import android.content.Intent;

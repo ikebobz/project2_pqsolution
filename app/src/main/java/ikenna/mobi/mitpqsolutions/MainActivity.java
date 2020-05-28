@@ -1,10 +1,9 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     }
     public void button_click1(View view)
     {
-     startActivity(new Intent("com.example.mitpqsolutions.Login"));
+     startActivity(new Intent("ikenna.mobi.mitpqsolutions.Login"));
        // EditText edit = findViewById(R.id.edittext1);
        // edit.setText("The button was just clicked");
     }

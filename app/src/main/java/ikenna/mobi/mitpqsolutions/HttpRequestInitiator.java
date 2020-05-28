@@ -1,7 +1,6 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.net.Uri;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 

@@ -1,4 +1,4 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.support.v7.app.AppCompatActivity;
 

@@ -1,4 +1,4 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -14,12 +14,11 @@ import android.net.Uri;
 import android.text.TextUtils;
 import java.util.Random;
 
-import java.net.URI;
 import java.util.HashMap;
 
 public class CachedContent extends ContentProvider
 {
-  static final String PROVIDER_NAME = "com.example.mitpqsolutions.CachedContent";
+  static final String PROVIDER_NAME = "ikenna.mobi.mitpqsolutions.CachedContent";
   static final String URL = "content://"+PROVIDER_NAME + "/solutions";
   static final String installInfoURL = "content://"+PROVIDER_NAME + "/installInfo";
   static final Uri CONTENT_URI = Uri.parse(URL);

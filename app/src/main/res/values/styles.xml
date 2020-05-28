@@ -6,5 +6,7 @@
         <item name="colorPrimary">#2f4f4f</item>
         <item name="colorPrimaryDark">#008b8b</item>
         <item name="colorAccent">#2f4f4f</item>
+        <item name = "android:textAllCaps">false</item>
+        <item name = "android:fontFamily">sans-serif-condensed</item>
     </style>
 </resources>

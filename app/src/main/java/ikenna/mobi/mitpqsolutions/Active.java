@@ -1,9 +1,7 @@
-package com.example.mitpqsolutions;
+package ikenna.mobi.mitpqsolutions;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -34,7 +32,6 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Active extends AppCompatActivity {
 
@@ -56,6 +53,7 @@ public class Active extends AppCompatActivity {
     Button btnImage;
     int counter;
     static boolean runoffline = false;
+    String rcount;
 
 
     @Override
@@ -122,15 +120,22 @@ public class Active extends AppCompatActivity {
         protected String doInBackground(String... params)
      {
          HttpRequestInitiator httpJsonParser = new HttpRequestInitiator();
-         JSONObject jsonObject = httpJsonParser.startRequest(
-                 BASE_URL + "getcourses.php", "GET", null);
+
          try {
-             int success = jsonObject.getInt(KEY_SUCCESS);
+
              JSONArray courses;
-             if (success == 1) {
+
                  courseList = new ArrayList<>();
                  course_codes = new ArrayList<>();
-                 courses = jsonObject.getJSONArray(KEY_DATA);
+                 if(Home.prog_courses.length()>0) courses = Home.prog_courses;
+                 else
+                     {
+                         JSONObject jsonObject = httpJsonParser.startRequest(
+                                 BASE_URL + "getcourses.php", "GET", null);
+                         int success = jsonObject.getInt(KEY_SUCCESS);
+                         if(success != 1) return "";
+                     courses = jsonObject.getJSONArray(KEY_DATA);
+                 }
                  //Iterate through the response and populate movies list
                  for (int i = 0; i < courses.length(); i++) {
                      JSONObject course = courses.getJSONObject(i);
@@ -144,7 +149,7 @@ public class Active extends AppCompatActivity {
                      if(!testCourseID(courseId))
                          numcourses+=addCourse(courseId,courseName);
                  }
-             }
+
          } catch (JSONException e)
          {
              e.printStackTrace();
@@ -274,7 +279,9 @@ public class Active extends AppCompatActivity {
                                         btnImage.setEnabled(true);
                                      else btnImage.setEnabled(false);
                                     resultVw.setText(answer.split("#")[0]);
-                                    txt_rescnt.setText("Number of Search Results: "+keys.length);
+                                    rcount = "Number of Search Results: "+keys.length;
+                                    txt_rescnt.setText(rcount);
+
                                 }
 
                             }
@@ -391,12 +398,15 @@ public class Active extends AppCompatActivity {
     public void Forward_click(View vw)
     {
         if(qaentries.isEmpty()) return;
+        TextView num_results = findViewById(R.id.resltcnt);
         EditText qfield =  findViewById(R.id.editq);
         Button btnTab = findViewById(R.id.setable);
         TextView resultVw = findViewById(R.id.searchResult);
         counter++;
         if(counter <= keys.length-1)
       {
+          //num_results.setText(rcount+"("+String.valueOf(counter)+")");
+          num_results.setText(String.format("%s(%d)",rcount,counter+1));
           String first = qaentries.get(keys[counter]);
           resultVw.setText(first.split("#")[0]);
           if(first.split("#").length>1)
@@ -413,6 +423,8 @@ public class Active extends AppCompatActivity {
         else
         {
             counter = 0;
+            //num_results.setText(rcount+"("+String.valueOf(counter)+")");
+            num_results.setText(String.format("%s(%d)",rcount,counter+1));
             String first = qaentries.get(keys[counter]);
             resultVw.setText(first.split("#")[0]);
             if(first.split("#").length>1)
@@ -426,12 +438,15 @@ public class Active extends AppCompatActivity {
     }
     public void Back_click(View vw)
     {
+        TextView num_results = findViewById(R.id.resltcnt);
         if(qaentries.isEmpty()) return;
         EditText qfield =  findViewById(R.id.editq);
         TextView resultVw = findViewById(R.id.searchResult);
         Button btnTab = findViewById(R.id.setable);
         if(counter==0) counter=keys.length;
         counter--;
+        //num_results.setText(rcount+"("+String.valueOf(counter)+")");
+        num_results.setText(String.format("%s(%d)",rcount,counter+1));
         String first = qaentries.get(keys[counter]);
         resultVw.setText(first.split("#")[0]);
         if(first.split("#").length>1)
@@ -486,7 +501,7 @@ public class Active extends AppCompatActivity {
     public void getTables(View view)
     {
       try {
-          Intent intent = new Intent("com.example.mitpqsolutions.TableDisplay");
+          Intent intent = new Intent("ikenna.mobi.mitpqsolutions.TableDisplay");
           if (qaentries.isEmpty()) return;
           String tableinfo = qaentries.get(keys[counter]);
           String colnum = tableinfo.split("@", 3)[0].split("#")[1];
@@ -507,13 +522,19 @@ public class Active extends AppCompatActivity {
     {
      EditText editText  = findViewById(R.id.editq);
      TextView answervw  = findViewById(R.id.searchResult);
+     Button forTable = findViewById(R.id.setable);
+     Button forImage = findViewById(R.id.seeimg);
+     TextView label = findViewById(R.id.resltcnt);
      editText.getText().clear();
      answervw.setText("");
+     forTable.setEnabled(false);
+     forImage.setEnabled(false);
+     label.setText("");
 
     }
     public void imgvwrClicked(View view)
     {
-      Intent intent = new Intent("com.example.mitpqsolutions.ImageViewer");
+      Intent intent = new Intent("ikenna.mobi.mitpqsolutions.ImageViewer");
       if(imageurls.isEmpty()) return;
       intent.putExtra("imageurl",imageurls.get(keys[counter]));
       startActivity(intent);
@@ -581,5 +602,17 @@ public class Active extends AppCompatActivity {
             e.printStackTrace();
         }
         //Toast.makeText(getApplicationContext(),"Images saved to "+imageFile,Toast.LENGTH_SHORT).show();
+    }
+    public void btnShowFull(View view)
+    {
+
+     EditText editText = findViewById(R.id.editq);
+     TextView tview = findViewById(R.id.searchResult);
+     if(editText.getText().toString().length()==0) return;
+     Intent forward = new Intent("ikenna.mobi.mitpqsolutions.QAShow");
+     forward.putExtra("question",editText.getText().toString());
+     forward.putExtra("answer",tview.getText().toString());
+     startActivity(forward);
+
     }
 }
