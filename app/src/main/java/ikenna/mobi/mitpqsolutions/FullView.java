@@ -286,7 +286,8 @@ public class FullView extends AppCompatActivity
                 btnImage.setEnabled(true);
             else btnImage.setEnabled(false);
             resultVw.setText(first.split("#")[0]);
-            txt_rescnt.setText("Number of Search Results: "+keys.length);
+            rcount = String.valueOf(keys.length);
+            txt_rescnt.setText(rcount);
             ret = true;
         }
 

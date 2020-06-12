@@ -1,18 +1,32 @@
 package ikenna.mobi.mitpqsolutions;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.google.android.vending.licensing.AESObfuscator;
+import com.google.android.vending.licensing.LicenseChecker;
+import com.google.android.vending.licensing.LicenseCheckerCallback;
+import com.google.android.vending.licensing.ServerManagedPolicy;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,14 +35,19 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Timer;
 
+
 public class Login extends AppCompatActivity
 {
  ProgressDialog pdialog;
  String str_email,str_pass,passcrypt;
+ public static String root;
+
  @Override public void onCreate(Bundle saved)
  {
   super.onCreate(saved);
   setContentView(R.layout.activity_login);
+  getPreferences();
+
  }
  JSONObject jsonobj;
  boolean finished = false;
@@ -37,46 +56,31 @@ public class Login extends AppCompatActivity
 
  public void register_click(View view)
  {
-     if(getAppStore(getApplicationContext()).equals("com.android.vending"))
-      startActivity(new Intent("ikenna.mobi.mitpqsolutions.Registration"));
-     else
-     {
-      Toast.makeText(getApplicationContext(),"Please purchase and download app from PlayStore",Toast.LENGTH_SHORT).show();
-      return;
-     }
+
+  startActivity(new Intent("ikenna.mobi.mitpqsolutions.Registration"));
 
  }
  Timer timer;
  public void login_click(View view)
  {
-  if(getAppStore(getApplicationContext()).equals("com.android.vending"))
-  {
-   EditText txtemail = findViewById(R.id.txtEmail);
-   if(txtemail.getText().toString().equals("asserting"))
-   {
-    startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
-    return;
-   }
 
-  }
-  else
-  {
-   Toast.makeText(getApplicationContext(), "Please purchase and download app from PlayStore", Toast.LENGTH_SHORT).show();
-   return;
-  }
   Active.runoffline = false;
+  FullView.runoffline = false;
   CheckBox chkbox = findViewById(R.id.offcheck);
   if(chkbox.isChecked())
   {
    Active.runoffline = true;
-   startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
+   FullView.runoffline = true;
+   startActivity(new Intent("ikenna.mobi.mitpqsolutions.Home"));
    return;
   }
 
   EditText email = findViewById(R.id.txtEmail);
   EditText password = findViewById(R.id.txtPwd);
    str_email = email.getText().toString();
+   root = email.getText().toString();
    str_pass = password.getText().toString();
+   savePreferences(str_email,str_pass);
   try
   {
     passcrypt = AESCrypt.Encrypt(str_pass);
@@ -87,7 +91,7 @@ public class Login extends AppCompatActivity
     credentials.put("pass", passcrypt);
     //credentials.put("key",getKey());
     new LoginTask().execute();
-   } else Toast.makeText(this,"Could not establish remote connection",Toast.LENGTH_SHORT).show();
+   } else Toast.makeText(getApplicationContext(),"Could not establish remote connection",Toast.LENGTH_SHORT).show();
   }
   catch(Exception ex)
   {
@@ -95,6 +99,7 @@ public class Login extends AppCompatActivity
   }
 
  }
+
  protected void initProgress()
  {
   pdialog = new ProgressDialog(this);
@@ -138,7 +143,7 @@ public class Login extends AppCompatActivity
      if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
      {
       //if(jobj.getString("key").equals(getKey()))
-      startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
+      startActivity(new Intent("ikenna.mobi.mitpqsolutions.Home"));
       //else
        //Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT).show();
      }
@@ -178,28 +183,24 @@ public class Login extends AppCompatActivity
   return key;
 
  }
- public static boolean verifyInstaller(final Context context) {
-
-  final String installer = context.getPackageManager()
-          .getInstallerPackageName(context.getPackageName());
-
-  return installer != null &&
-          installer.startsWith("PLAY\\_STORE\\_APP\\_ID");
-
+ protected void savePreferences(String uname, String pass)
+ {
+  SharedPreferences sp=getSharedPreferences("Login", MODE_PRIVATE);
+  SharedPreferences.Editor Ed=sp.edit();
+  Ed.putString("uname",uname );
+  Ed.putString("pass",pass);
+  Ed.commit();
  }
- public static String getAppStore(Context context) {
-  String pName = BuildConfig.APPLICATION_ID;
-
-  PackageManager packageManager = context.getPackageManager();
-  String installPM = packageManager.getInstallerPackageName(pName);
-  if ("com.android.vending".equals(installPM)) {
-   // Installed from the Google Play
-   return "Google Play";
-  } else if ("com.amazon.venezia".equals(installPM)) {
-   // Installed from the Amazon Appstore
-   return "Amazon Appstore";
-  }
-  return "unknown";
+ protected void getPreferences()
+ {
+  EditText email = findViewById(R.id.txtEmail);
+  EditText password = findViewById(R.id.txtPwd);
+  SharedPreferences sp1=this.getSharedPreferences("Login", MODE_PRIVATE);
+  String unm=sp1.getString("uname", null);
+  String pass = sp1.getString("pass", null);
+  email.setText(unm);
+  password.setText(pass);
  }
+
 
 }

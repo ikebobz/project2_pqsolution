@@ -65,15 +65,22 @@ public class Active extends AppCompatActivity {
       btnTab.setEnabled(false);
       btnImage = findViewById(R.id.seeimg);
       btnImage.setEnabled(false);
-      if(runoffline)
-      {
-          populateSpinnerLocal();
-          return;
+      try {
+          if (runoffline) {
+              populateSpinnerLocal();
+              return;
+          }
+          if (new PingNetworkStatus().checkConnectionState(getApplicationContext()))
+              new FetchCoursesTask().execute();
+          else {
+              populateSpinnerLocal();
+              Toast.makeText(getApplicationContext(), "unable to establish remote connection", Toast.LENGTH_SHORT).show();
+          }
       }
-      if(new PingNetworkStatus().checkConnectionState(getApplicationContext()))
-      new FetchCoursesTask().execute();
-      else
-          Toast.makeText(this,"unable to establish remote connection",Toast.LENGTH_SHORT).show();
+      catch(Exception ex)
+      {
+          Toast.makeText(getApplicationContext(), "Ooops something has gone wrong!!!!", Toast.LENGTH_SHORT).show();
+      }
 
     }
     @Override protected void onSaveInstanceState(Bundle packet)
@@ -389,7 +396,8 @@ public class Active extends AppCompatActivity {
             else btnImage.setEnabled(false);
             resultVw.setText(first.split("#")[0]);
             qfield.setText(keys[counter].toString());
-            txt_rescnt.setText("Number of Search Results: "+keys.length);
+            rcount = "Number of Search Results: "+keys.length;
+            txt_rescnt.setText(rcount);
             ret = true;
         }
 
