@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
         android:layout_marginEnd="80dp"
+
         android:ems="10"/>
     <TextView
         android:id="@+id/forEmail"
@@ -32,6 +33,7 @@
         android:layout_height="wrap_content"
         android:text="Email"
         android:layout_marginStart="80dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="80dp"/>
     <EditText
         android:id="@+id/txtEmail"
@@ -39,6 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
         android:layout_marginEnd="80dp"
+
         android:ems="10" />
     <TextView
         android:id="@+id/forPass"
@@ -46,6 +49,7 @@
         android:layout_height="wrap_content"
         android:text="Password"
         android:layout_marginStart="80dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="80dp"/>
     
     <EditText
@@ -54,6 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
         android:layout_marginEnd="80dp"
+
         android:ems="10" />
     <Button
         android:id="@+id/btnRegister"

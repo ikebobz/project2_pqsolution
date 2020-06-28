@@ -3,6 +3,7 @@ package ikenna.mobi.mitpqsolutions;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -82,7 +83,7 @@ public class Home extends AppCompatActivity
     }
     private  class FetchCoursesTask extends AsyncTask<String,String,String>
     {
-
+        int numcourses = 0;
         @Override
         protected void onPreExecute()
         {
@@ -116,6 +117,8 @@ public class Home extends AppCompatActivity
                         jsobj.put(KEY_COURSE_ID,courseId);
                         jsobj.put(KEY_COURSE_DESC,coursename);
                         prog_courses.put(jsobj);
+                        if(!testCourseID(courseId))
+                            numcourses+=addCourse(courseId,coursename);
                     }
 
                 }
@@ -130,7 +133,8 @@ public class Home extends AppCompatActivity
             runOnUiThread(new Runnable() {
                 public void run() {
                     populateSpinner();
-
+                    if(numcourses>0)
+                        Toast.makeText(getApplicationContext(),numcourses+" new course(s) added ",Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -144,7 +148,7 @@ public class Home extends AppCompatActivity
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,course_codes);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
-        Toast.makeText(getApplicationContext(),course_codes.size()+" course(s) loaded",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),course_codes.size()+" course(s) loaded",Toast.LENGTH_SHORT).show();
     }
     private void loadCourses()
     {
@@ -171,6 +175,7 @@ public class Home extends AppCompatActivity
     {
             RadioButton rbtn1 = findViewById(R.id.rdbtn1);
             RadioButton rbtn2 = findViewById(R.id.rdbtn2);
+            RadioButton rbtn3 = findViewById(R.id.rdbtn3);
             if(rbtn1.isChecked()) startActivity(new Intent("ikenna.mobi.mitpqsolutions.Active"));
             if(rbtn2.isChecked())
             {
@@ -178,6 +183,7 @@ public class Home extends AppCompatActivity
                 String selected = spinner.getSelectedItem().toString();
                 startActivity(new Intent("ikenna.mobi.mitpqsolutions.FullView").putExtra("course",selected));
             }
+            if(rbtn3.isChecked()) startActivity(new Intent("ikenna.mobi.mitpqsolutions.SolRequest"));
     }
     //License verification section
     protected void initLicenseCheckingParm()
@@ -349,6 +355,45 @@ public class Home extends AppCompatActivity
             spinner.setAdapter(adapter);
         }
 
+    }
+    public int addCourse(String courseid, String description)
+    {
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CachedContent.coursecode, courseid);
+            values.put(CachedContent.description, description);
+
+            Uri track_uri = getContentResolver().insert(CachedContent.uri_courses, values);
+            if (track_uri != null)
+                return 1;
+            else
+                return 0;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+    protected boolean testCourseID(String courseid)
+    {
+        boolean exist = false;
+        try {
+
+            Uri content = Uri.parse(CachedContent.url_courses);
+            String[] projection = {CachedContent.coursecode};
+            String selClause = CachedContent.coursecode + " =?";
+            String[] args = {courseid};
+            Cursor c = getApplicationContext().getContentResolver().query(content, projection, selClause, args, CachedContent.coursecode);
+            if (c != null && c.getCount() > 0) exist = true;
+
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return exist;
     }
 
 }

@@ -202,9 +202,11 @@ public class Active extends AppCompatActivity {
        return true;
     }
     String imageurl;
+    int addeditems =0;
     public void search_click(View view)
     {
         counter = 0;
+
         qbox = findViewById(R.id.editq);
       String question = "%"+qbox.getText().toString()+"%";
       resultVw = findViewById(R.id.searchResult);
@@ -265,7 +267,7 @@ public class Active extends AppCompatActivity {
                                         //resultVw.setText(answer);
                                         if(!testID(qid))
                                         {
-                                            addItem(qid, course, qdesc, answer + "#" + combined, getLocalPath(imageurl));
+                                            addeditems+=addItem(qid, course, qdesc, answer + "#" + combined, getLocalPath(imageurl));
                                             new Thread(new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -288,6 +290,8 @@ public class Active extends AppCompatActivity {
                                     resultVw.setText(answer.split("#")[0]);
                                     rcount = "Number of Search Results: "+keys.length;
                                     txt_rescnt.setText(rcount);
+                                    if(addeditems>0)
+                                    Toast.makeText(getApplicationContext(),addeditems+" items cached!!",Toast.LENGTH_SHORT).show();
 
                                 }
 
@@ -318,7 +322,7 @@ public class Active extends AppCompatActivity {
          ex.printStackTrace();
       }
     }
-    public void addItem(String ID,String course,String que,String ans,String imageurl)
+    public int addItem(String ID,String course,String que,String ans,String imageurl)
     {
         //Toast.makeText(getBaseContext(),imageurl,Toast.LENGTH_SHORT).show();
         ContentValues values = new ContentValues();
@@ -328,9 +332,10 @@ public class Active extends AppCompatActivity {
         values.put(CachedContent.QANS,ans);
         values.put(CachedContent.IMAGEURL,imageurl);
         Uri track_uri = getContentResolver().insert(CachedContent.CONTENT_URI,values);
-        if(track_uri!=null)
-            Toast.makeText(getBaseContext(),"Answer Cached Successfully",Toast.LENGTH_SHORT).show();
-        else  Toast.makeText(getBaseContext(),"Answer Caching Failed",Toast.LENGTH_SHORT).show();
+        if(track_uri!=null) return 1;
+         else return 0;
+           /* Toast.makeText(getBaseContext(),"Answer Cached Successfully",Toast.LENGTH_SHORT).show();
+        else  Toast.makeText(getBaseContext(),"Answer Caching Failed",Toast.LENGTH_SHORT).show();*/
 
 
     }
@@ -572,7 +577,8 @@ public class Active extends AppCompatActivity {
         String name = url.substring( url.lastIndexOf('/')+1, url.length() );
         //String appFolder = "PQDoctor";
        // ContextWrapper cw = new ContextWrapper(getApplicationContext());
-        File path = new File(Environment.getExternalStorageDirectory() + "/Download/PQDoctor/");
+       // File path = new File(Environment.getExternalStorageDirectory() + "/Download/PQDoctor/");
+        File path = new File(new File(Environment.getExternalStorageDirectory(),"Download"),"PQDoctor");
         if(!path.exists())
             path.mkdir();
         File imageFile = new File(path, name);
@@ -588,7 +594,8 @@ public class Active extends AppCompatActivity {
             URL imageurl = new URL(url.split("&")[1]);
             Bitmap bm = BitmapFactory.decodeStream(imageurl.openConnection().getInputStream());
             //String appFolder = "profile";
-            File path = new File(Environment.getExternalStorageDirectory() + "/Download/PQDoctor/");
+            //File path = new File(Environment.getExternalStorageDirectory() + "/Download/PQDoctor/");
+            File path = new File(new File(Environment.getExternalStorageDirectory(),"Download"),"PQDoctor");
             if(!path.exists())
                 path.mkdir();
             imageFile = new File(path, name);

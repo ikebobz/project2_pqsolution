@@ -65,6 +65,12 @@
                 <category android:name = "android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name = "ikenna.mobi.mitpqsolutions.SolRequest">
+            <intent-filter>
+                <action android:name = "ikenna.mobi.mitpqsolutions.SolRequest"/>
+                <category android:name = "android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".Login">
             <intent-filter>
                 <action android:name = "android.intent.action.MAIN" />

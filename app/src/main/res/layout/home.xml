@@ -24,6 +24,11 @@
             android:layout_height="wrap_content"
             android:text="View Questions by Course"
             android:id = "@+id/rdbtn2"/>
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text = "Submit Question"
+            android:id = "@+id/rdbtn3"/>
 
     </RadioGroup>
     <LinearLayout

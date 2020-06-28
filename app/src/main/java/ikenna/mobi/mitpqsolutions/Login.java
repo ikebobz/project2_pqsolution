@@ -40,13 +40,15 @@ public class Login extends AppCompatActivity
 {
  ProgressDialog pdialog;
  String str_email,str_pass,passcrypt;
- public static String root;
+ public static String root,uname;
+
 
  @Override public void onCreate(Bundle saved)
  {
   super.onCreate(saved);
   setContentView(R.layout.activity_login);
   getPreferences();
+  doFirstRun();
 
  }
  JSONObject jsonobj;
@@ -142,10 +144,8 @@ public class Login extends AppCompatActivity
      JSONObject jobj = array.getJSONObject(0);
      if(jobj.getString("email").equals(str_email)&& jobj.getString("pass").equals(passcrypt))
      {
-      //if(jobj.getString("key").equals(getKey()))
       startActivity(new Intent("ikenna.mobi.mitpqsolutions.Home"));
-      //else
-       //Toast.makeText(getApplicationContext(),"Credentials does not match install ID",Toast.LENGTH_SHORT).show();
+      uname = jobj.getString("email");
      }
      else
       Toast.makeText(getApplicationContext(),"Wrong Username/Password",Toast.LENGTH_SHORT).show();
@@ -201,6 +201,31 @@ public class Login extends AppCompatActivity
   email.setText(unm);
   password.setText(pass);
  }
+ protected void inform()
+ {
+     new AlertDialog.Builder(this)
+             .setTitle("Note")
+             .setMessage("Please ensure you have granted storage access permission to this app before first run\n\nOffline mode enables you to use this app when offline.\nNote that the offline mode only gives you access to Questions and Answers that you have first browsed while online!! ")
 
+             // Specifying a listener allows you to take an action before dismissing the dialog.
+             // The dialog is automatically dismissed when a dialog button is clicked.
+             .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                 public void onClick(DialogInterface dialog, int which) {
+                     // Continue with delete operation
+                 }
+             })
 
+             // A null listener allows the button to dismiss the dialog and take no further action.
+             .setIcon(android.R.drawable.ic_dialog_alert)
+             .show();
+ }
+ private void doFirstRun() {
+  SharedPreferences settings = getSharedPreferences("ALERT", MODE_PRIVATE);
+  if (settings.getBoolean("isFirstRun", true)) {
+   inform();
+   SharedPreferences.Editor editor = settings.edit();
+   editor.putBoolean("isFirstRun", false);
+   editor.commit();
+  }
+ }
 }
